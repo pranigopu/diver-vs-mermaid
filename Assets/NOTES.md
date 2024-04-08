@@ -1,5 +1,8 @@
 # NOTES
 
+## Kinematic colliders
+To enable colliders such that the sprites can move but not be moved, use the "Kinematic" option instead of "Dynamic" option.
+
 ## Use of "Is Trigger" property for Collider2D of projectile
 A trigger doesn't register a collision with an incoming Rigidbody. Instead, it sends `OnTriggerEnter`, `OnTriggerExit` and `OnTriggerStay` message when a rigidbody enters or exits the trigger volume. This is perfect for a projectile that is not supposed to physically move the target.
 

@@ -39,7 +39,8 @@ public class Mermaid : MonoBehaviour
     Position of agent in level generator grid is based on some scaling of the actual tilemap grid.
     In particular, we adjust for the cell size used in the `Grid` game object and thus get the level generator grid position.
     */
-    [SerializeField] float movementSpeed = 10f;
+
+    [SerializeField] float movementSpeed = 12f;
     // To manipulate the physical aspects of the sprite:
     Rigidbody2D rb;
 
@@ -93,6 +94,9 @@ public class Mermaid : MonoBehaviour
         // Initialising the mermaid's rigid body component:
         rb = GetComponent<Rigidbody2D>();
 
+        // Setting the mermaid sprite's color to a fixed color (orange)
+        GetComponent<SpriteRenderer>().color = new Color(1, 0.5f, 0, 1);
+
         // Initialising and starting the behaviour tree (with the blackboard):
         tree = CreateBehaviourTree();
         blackboard = tree.Blackboard;
@@ -121,7 +125,7 @@ public class Mermaid : MonoBehaviour
         if(rb.position.x <= 0 || rb.position.y <= 0 || rb.position.x >=  max_x - 1 || rb.position.y >= max_y)
         {
             Vector2 mapCentre = new Vector2(max_x / 2, max_y / 2);
-            rb.velocity = (mapCentre - rb.position).normalized * movementSpeed;
+            rb.velocity = (mapCentre - rb.position).normalized * movementSpeed / 2; // Mermaid is designed to move slower when patrolling (`ContainAgentWithinMap` is relevant only for patrolling)
             // NOTE: The `normalized` property gets vector with the same direction but magnitude 1; this helps scale the velocity by the required speed
         }
     }
@@ -150,7 +154,7 @@ public class Mermaid : MonoBehaviour
         Vector2 movementDirection = new Vector2(x, y).normalized;
         // NOTE: The `normalized` property gets vector with the same direction but magnitude 1; this helps scale the velocity by the required speed
 
-        rb.velocity = movementDirection * movementSpeed;
+        rb.velocity = movementDirection * movementSpeed / 2; // Mermaid is designed to move slower when patrolling
     }
 
     Node PatrolBehaviour()
@@ -176,8 +180,12 @@ public class Mermaid : MonoBehaviour
     //------------------------------------
     // BEHAVIOUR 3: Melee/close quarters attack
 
+    // Variable to keep track of time between two melee attacks:
+    float t_melee = 0f;
+
     // Precursor to the melee behaviour:
-    // NOTE: I have used a trigger instead of collision since a trigger can detect a wider area without halting movement; this helps better simulate melee combat
+    // NOTE 1: I have used a trigger instead of collision since a trigger can detect a wider area without halting movement; this helps better simulate melee combat
+    // NOTE 2: I have used both a trigger and a non-trigger collider; the former for detection, the latter for physical collision
     void OnTriggerEnter2D(Collider2D colliderObject)
     {
         Diver diver = colliderObject.GetComponent<Diver>();
@@ -192,15 +200,14 @@ public class Mermaid : MonoBehaviour
         }
     }
 
-    // Variable to keep track of time between two melee attacks:
-    float t_melee = 0f;
     void Melee()
     {
-        rb.velocity = Vector2.zero;
-
         // If last melee attack happened less than or equal to 1 second ago, do not attack:
-        if(Time.time - t_melee <= 2)
+        if(Time.time - t_melee <= 1)
             return;
+        
+        // Setting velocity as zero (so it stops moving when in melee mode):
+        rb.velocity = Vector2.zero;
 
         // Resetting the time variable:
         t_melee = Time.time;
@@ -237,27 +244,48 @@ public class Mermaid : MonoBehaviour
         return new Action(() => Shoot());
     }
 
+    //------------------------------------
+    // BEHAVIOUR 5: Idle behaviour
+
+    void Idle()
+    {
+        Vector2 difference = new Vector2(LevelGenerator.width * renderedGrid.cellSize.x / 2, LevelGenerator.height * renderedGrid.cellSize.y / 2) - rb.position;
+        // The mermaid moves fast toward the centre of the map if not already around there:
+        if(difference.magnitude > 2)
+            rb.velocity = difference.normalized * movementSpeed * 2;
+        else
+            rb.velocity = Vector2.zero;
+        return;
+    }
+
+    Node IdleBehaviour()
+    {
+        return new Action(() => Idle());
+    }
+
     //================================================
     // MAKING THE BEHAVIOUR TREE
 
     // Variable to keep track of time between two perception updates:
-    float t_updatePerception = 0f;
+    float t_updateVisibility = 0f;
     // Mermaid perception update function:
     void UpdatePerception()
     {
         // If last sighting happened less than or equal to 3 seconds ago, do not update:
-        if((bool) blackboard["visible"] == true && Time.time - t_updatePerception <= 3)
+        if((bool) blackboard["visible"] == true && Time.time - t_updateVisibility <= 3)
             return;
         
         // Resetting the time variables:
-        t_updatePerception = Time.time;
+        t_updateVisibility = Time.time;
 
+        //________________________
         // Updating perception:
         Vector2Int targetPosition = new Vector2Int((int) (diver.transform.position.x / renderedGrid.cellSize.x), (int) (diver.transform.position.y / renderedGrid.cellSize.y));
         Vector2Int sourcePosition = new Vector2Int((int) (rb.position.x / renderedGrid.cellSize.x), (int) (rb.position.y / renderedGrid.cellSize.y));
         levelGenerator.UpdateNeighbourhoodData(targetPosition.x, targetPosition.y);
         blackboard["distanceFromTarget"] = (targetPosition - sourcePosition).magnitude;
         blackboard["visible"] = (levelGenerator.total_5_by_5[0] >= 12 && levelGenerator.total_3_by_3[0] >= 5)|| (Mathf.Abs(targetPosition.x - sourcePosition.x) < 5 && Mathf.Abs(targetPosition.y - sourcePosition.y) < 5);
+        blackboard["gameStatus"] = diver.gameStatus;
     }
 
     // Behaviour tree:
@@ -268,19 +296,26 @@ public class Mermaid : MonoBehaviour
                 () => UpdatePerception(),
                 new Selector(
                     new BlackboardCondition(
-                        "distanceFromTarget", // Defines the key in the blackboard; the condition is w.r.t its value
-                        Operator.IS_SMALLER, // Defines the conditional operator to be used
-                        3f, // Checks for condition w.r.t. this value and the specified blackboard value (checks if player is in melee distance)
-                        Stops.SELF, // Stops if condition is not met and allows the parent composite node to move to its next node
-                        MeleeBehaviour()), // If the condition is true, executes this action node (stop moving)
-                    new Sequence(
+                    "gameStatus", // Defines the key in the blackboard; the condition is w.r.t its value
+                    Operator.IS_GREATER, // Defines the conditional operator to be used
+                    Diver.ONGOING, // Checks for condition w.r.t. this value and the specified blackboard value (checks if game is ongoing)
+                    Stops.SELF, // Stops if condition is not met and allows the parent composite node to move to its next node
+                    IdleBehaviour()), // If the condition is true, executes this action node (idle behaviour)
+                    new Selector(
                         new BlackboardCondition(
-                            "visible", // Defines the key in the blackboard; the condition is w.r.t its value
-                            Operator.IS_EQUAL, // Defines the conditional operator to be used
-                            true, // Checks for condition w.r.t. this value and the specified blackboard value (checks if player is visible)
+                            "distanceFromTarget", // Defines the key in the blackboard; the condition is w.r.t its value
+                            Operator.IS_SMALLER, // Defines the conditional operator to be used
+                            3f, // Checks for condition w.r.t. this value and the specified blackboard value (checks if player is in melee distance)
                             Stops.SELF, // Stops if condition is not met and allows the parent composite node to move to its next node
-                            SeekBehaviour()), // If the condition is true, executes this action node (seeks diver)
-                        ShootBehaviour()),
-                    PatrolBehaviour())));
+                            MeleeBehaviour()), // If the condition is true, executes this action node (stop moving)
+                        new Sequence(
+                            new BlackboardCondition(
+                                "visible", // Defines the key in the blackboard; the condition is w.r.t its value
+                                Operator.IS_EQUAL, // Defines the conditional operator to be used
+                                true, // Checks for condition w.r.t. this value and the specified blackboard value (checks if player is visible)
+                                Stops.SELF, // Stops if condition is not met and allows the parent composite node to move to its next node
+                                SeekBehaviour()), // If the condition is true, executes this action node (seeks diver)
+                            ShootBehaviour()),
+                        PatrolBehaviour()))));
     }
 }

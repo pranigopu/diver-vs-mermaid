@@ -34,15 +34,23 @@ public class Diver : MonoBehaviour
     */
     [SerializeField] float movementSpeed = 20f;
     // To manipulate the physical aspects of the sprite:
-    [HideInInspector] public Rigidbody2D rb;
+    [HideInInspector] Rigidbody2D rb;
 
     //------------------------------------
     // AGENT-RELATED VARIABLES
 
     // Variable to keep track of the artefacts collected:
     public int artefactsInHand = 0;
+    // Variable for storing maximum health:
+    [HideInInspector] public int maxHealth;
     // Variable to keep track of health points:
-    [SerializeField] int health = 10;
+    [SerializeField] int health = 6;
+    // Constants to make the game's status easier to read:
+    public const int WIN = 1;
+    public const int LOSE = 0;
+    public const int ONGOING = -1;
+    // Variable to store the game's status:
+    [HideInInspector] public int gameStatus = ONGOING;
 
     //------------------------------------
     // LEVEL-RELATED VARIABLES
@@ -55,10 +63,17 @@ public class Diver : MonoBehaviour
     public Tilemap tilemap;
 
     //------------------------------------
-    // TIME-RELATED VARIABLES
+    // BEHAVIOUR TREE-RELATED VARIABLES
 
-    // Variable to keep track of time between spacebar presses:
-    private float t_spacebar = 0f;
+    // The mermaid's behaviour tree:
+    Root tree;
+    // The mermaid's behaviour blackboard:
+    Blackboard blackboard;
+
+    //------------------------------------
+    // VARIABLES FOR TIMING THE GAME (FOR PERFORMANCE MEASUREMENT)
+
+    float t_start;
 
     //================================================
     // MAIN FUNCTIONS
@@ -67,87 +82,76 @@ public class Diver : MonoBehaviour
     // Start is called before the first frame update:
     void Start()
     {
+        // Initialising maximum health as current health:
+        maxHealth = health;
+
         // Initialising the diver's rigid body component:
         rb = GetComponent<Rigidbody2D>();
 
+        //________________________
+        // Setting the diver sprite's color to a fixed color (black)
+        GetComponent<SpriteRenderer>().color = Color.black;
+
+        //________________________
         // Placing agent in open water after level generation is completed:
         StartCoroutine(PlaceAgentInOpenWaterAfterLevelGeneration());
-    }
-
-    //------------------------------------
-    // Updating inputs and position (this function is called once per frame):
-    void Update()
-    {
-        // Update inputs for movement:
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-
-        // If agent position is out-of-bounds (with respect to the level map), snap it back to within bounds:
-        ContainAgentWithinMap();
-
-        // Updating the agent's position as per the grid in `LevelGenerator`:
-        position = new Vector2Int((int) (rb.position.x / renderedGrid.cellSize.x), (int) (rb.position.y / renderedGrid.cellSize.y));
 
         //________________________
-        // Pick up artefact if possible, else place artefacat if possible:
-        if(Input.GetKey(KeyCode.Space))
-        {   
-            // We ensure a 0.5 seconds cooldown between artefact handling calls...
-            if(Time.time - t_spacebar > 0.5)
-            {
-                HandleArtefacts();
-                t_spacebar = Time.time;
-            }
-        }
-        //________________________
-        // Reset game:
-        if(Input.GetKey(KeyCode.Return))
-            artefactsInHand = 0;
-
-        //________________________
-        // In case the map was regenerated in some way...
-        if(Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Return))
-            StartCoroutine(PlaceAgentInOpenWaterAfterLevelGeneration());
-    }
-
-    //------------------------------------
-    // Updating the physical aspects of the sprite:
-    /*
-    NOTE:
-    `FixedUpdate` is a method in `MonoBehaviour` with a certain function.
-    In this way, it is similar to `Start`, `Update` and `Awake`; these methods have certain broad purposes whose specific processes are implemented by us.
-    
-    Use `FixedUpdate` when using `Rigidbody`. Set a force to a Rigidbody and it applies each fixed frame.
-    `FixedUpdate` occurs at a measured time step that typically does not coincide with `MonoBehaviour.Update`.
-
-    REFERENCE:
-    https://docs.unity3d.com/ScriptReference/MonoBehaviour.FixedUpdate.html
-    */
-    private void FixedUpdate()
-    {
-        // Updating agent velocity (with artefact-in-hand-based speed penalty):
-        int k = levelGenerator.grid[position.x, position.y];
-        switch(k)
-        {
-            case -1: case 0: // NOTE: Case -1 is when an artefact is present
-                movementSpeed = 30f - artefactsInHand * 3;
-                break;
-            case 1:
-                movementSpeed = 20f - artefactsInHand * 2;
-                break;
-            case 2:
-                movementSpeed = 10f - artefactsInHand * 1;
-                break;
-            case 3:
-                movementSpeed = 1f - artefactsInHand * 0;
-                break;
-
-        }
-        rb.velocity = new Vector2(horizontalInput * movementSpeed, verticalInput * movementSpeed);
+        // Initialising and starting the behaviour tree (with the blackboard):
+        tree = CreateBehaviourTree();
+        blackboard = tree.Blackboard;
+        blackboard["artefactsInHand"] = 0;
+        t_start = Time.time; // Starting the timer!
+        tree.Start();
     }
 
     //================================================
     // HELPER FUNCTIONS
+
+    //------------------------------------
+    // Function to reset the game for the diver:
+    void ResetGame()
+    {
+        // Resetting statistics:
+        health = maxHealth;
+        artefactsInHand = 0;
+
+        // Restoring previous settings (before victory or defeat):
+        GetComponent<SpriteRenderer>().color = Color.black;
+        GetComponent<PolygonCollider2D>().enabled = true;
+        movementSpeed = 30f;
+
+        // Placing agent in open water after level generation is completed:
+        StartCoroutine(PlaceAgentInOpenWaterAfterLevelGeneration());
+
+        // Setting the game status to ongoing:
+        gameStatus = ONGOING;
+    }
+
+    //------------------------------------
+    // Function to bring game-over mode:
+    void GameOver(int k)
+    {
+        gameStatus = k;
+
+        if(gameStatus == LOSE)
+        {
+            Debug.Log("Game Over; YOU DIED! Enjoy being a ghost! | Press 'Return' to replay...");
+            
+            // EXTRA: Ghostly effect:
+            GetComponent<SpriteRenderer>().color = Color.white;
+            GetComponent<PolygonCollider2D>().enabled = false; // Disabling collider for "ghostly" effect
+            movementSpeed = 10f;
+        }
+        else if(gameStatus == WIN)
+        {
+            Debug.Log("Game Over; YOU WON! Enjoy being a mermaid!\n Your time: " + (Time.time - t_start).ToString() + " seconds | Press 'Return' to replay...");
+            
+            // EXTRA: Become a mermaid:
+            GetComponent<SpriteRenderer>().color = new Color(1, 0.5f, 0, 1);
+            movementSpeed = 30f;
+        }
+    }
 
     //------------------------------------    
     // Function to contain the agent's position within certain bounds:
@@ -222,13 +226,32 @@ public class Diver : MonoBehaviour
         PlaceAgentInOpenWater();
     }
 
+    //------------------------------------
+    // Function to record damage taken or (if appliable) death:
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        if(gameStatus == ONGOING && health <= 0)
+            GameOver(LOSE);
+        else if(gameStatus == ONGOING)
+            Debug.Log("Health = " + health.ToString());
+    }
+
     //================================================
-    // AGENT ACTION FUNCTIONS
+    // AGENT BEHAVIOUR FUNCTIONS
 
     //------------------------------------
+    // BEHAVIOUR 1: Handling artefacts (picking or placing)
+
+    // Variable to keep track of time between spacebar presses:
+    private float t_spacebar = 0f;
     // Function to pick up or place artefact(s):
     void HandleArtefacts()
     {
+        // We ensure a 0.5 seconds cooldown between artefact handling calls...
+        if(Time.time - t_spacebar <= 0.5)
+            return;
+
         // Search 3 x 3 neighbourhood for artefact:
         bool foundArtefact = false;
         int i = 0;
@@ -239,7 +262,7 @@ public class Diver : MonoBehaviour
         {
             for(j = position.y - 1; j <= position.y + 1; j++)
             {
-                // Continue if the following condition is met:
+                // Continue to next iteration if the following condition is met:
                 if(i < 0 || i >= LevelGenerator.width || j < 0 || j >= LevelGenerator.height)
                     continue;
 
@@ -263,14 +286,108 @@ public class Diver : MonoBehaviour
             levelGenerator.grid[position.x, position.y] = -1;
             artefactsInHand--;
         }
+
+        // Resetting the timer for the spacebar cooldown:
+        t_spacebar = Time.time;
+    }
+
+    Node HandleArtefactsBehaviour()
+    {
+        return new Action(() => HandleArtefacts());
     }
 
     //------------------------------------
-    // Function to take damage or (if appliable) die:
-    public void TakeDamage(int damage)
+    // Updating the motion of the sprite:
+    private void Move()
     {
-        health -= damage;
-        if(health <= 0)
-            Debug.Log("You're dead");
+        // Updating agent velocity (with artefact-in-hand-based speed penalty):
+        int k = levelGenerator.grid[position.x, position.y];
+        if(gameStatus == ONGOING)
+        {
+            switch(k)
+            {
+                case -1: case 0: // NOTE: Case -1 is when an artefact is present
+                    movementSpeed = 30f - artefactsInHand * 3;
+                    break;
+                case 1:
+                    movementSpeed = 20f - artefactsInHand * 2;
+                    break;
+                case 2:
+                    movementSpeed = 10f - artefactsInHand * 1;
+                    break;
+                case 3:
+                    movementSpeed = 1f - artefactsInHand * 0;
+                    break;
+
+            }
+        }
+        rb.velocity = new Vector2(horizontalInput * movementSpeed, verticalInput * movementSpeed);
+    }
+
+    Node MoveBehaviour()
+    {
+        return new Action(() => Move());
+    }
+
+    //================================================
+    // MAKING THE BEHAVIOUR TREE
+    
+    // Diver status update function:
+    // NOTE: We shall store in the blackboard only what is needed for the behaviour tree conditions
+    void UpdateStatus()
+    {
+        // If agent position is out-of-bounds (with respect to the level map), snap it back to within bounds:
+        ContainAgentWithinMap();
+
+        // Update inputs for movement:
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
+        // Updating the agent's position as per the grid in `LevelGenerator`:
+        position = new Vector2Int((int) (rb.position.x / renderedGrid.cellSize.x), (int) (rb.position.y / renderedGrid.cellSize.y));
+
+        // Storing other user input:
+        blackboard["input"] = Input.inputString;
+
+        //________________________
+        // Reset game if applicable:
+        if(Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.Alpha2))
+            ResetGame();
+
+        //________________________
+        // Checking for game-over conditions:
+        
+        // Checking for winning condition:
+        if(gameStatus == ONGOING && artefactsInHand >= levelGenerator.artefactsInTotal && health > 0)
+            GameOver(WIN);
+        
+        // Checking for losing condition (we should not need this, just fool-proofing):
+        else if(gameStatus == ONGOING && health <= 0)
+            GameOver(LOSE);
+
+        blackboard["gameStatus"] = gameStatus;
+    }
+
+    // Behaviour tree:
+    Root CreateBehaviourTree()
+    {
+        return new Root(new Service(
+                0.1f,
+                () => UpdateStatus(),
+                new Selector(
+                    new BlackboardCondition(
+                    "gameStatus", // Defines the key in the blackboard; the condition is w.r.t its value
+                    Operator.IS_GREATER, // Defines the conditional operator to be used
+                    ONGOING, // Checks for condition w.r.t. this value and the specified blackboard value (checks if game is ongoing)
+                    Stops.SELF, // Stops if condition is not met and allows the parent composite node to move to its next node
+                    MoveBehaviour()), // If the condition is true, executes this action node (move freely)
+                    new Sequence(
+                        MoveBehaviour(),
+                        new Selector(
+                            new BlackboardCondition(
+                            "input", // Defines the key in the blackboard; the condition is w.r.t its value
+                            Operator.IS_EQUAL, // Defines the conditional operator to be used
+                            " ", // Checks for condition w.r.t. this value and the specified blackboard value (checks if ' ' (space) was pressed)
+                            Stops.SELF, // Stops if condition is not met and allows the parent composite node to move to its next node
+                            HandleArtefactsBehaviour())))))); // If the condition is true, executes this action node (handle artefacts)
     }
 }

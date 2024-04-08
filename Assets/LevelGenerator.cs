@@ -30,7 +30,10 @@ public class LevelGenerator : MonoBehaviour
     [Range(0, 100)] [SerializeField] int seaweedPercent = 50;
     // Out of the remaining coverage, we define yellow coral coverage:
     [Range(0, 100)] [SerializeField] int yellowCoralPercent = 80;
-    // NOTE: Red coral percent  = 100 - Yellow coral percent  
+    // NOTE: Red coral percent  = 100 - Yellow coral percent
+    
+    // Total number of artefacts to place:
+    public int artefactsInTotal = 5;
 
     //------------------------------------
     // LEVEL GRID-RELATED VARIABLES
@@ -443,7 +446,7 @@ public class LevelGenerator : MonoBehaviour
     // STAGE C: POST-PROCESSING
 
     //------------------------------------
-    // Function to place 5 artefacts around the map at random:
+    // Function to place some artefacts around the map at random:
     void PlaceArtefacts()
     {
         // Initialising random number generator using seed:
@@ -452,7 +455,7 @@ public class LevelGenerator : MonoBehaviour
         int x = 0;
         int y = 0;
 
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < artefactsInTotal; i++)
         {   
             while(true)
             {

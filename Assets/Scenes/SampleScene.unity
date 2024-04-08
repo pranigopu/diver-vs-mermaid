@@ -297,7 +297,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 856345232}
-  - component: {fileID: 856345240}
+  - component: {fileID: 856345242}
   - component: {fileID: 856345231}
   - component: {fileID: 856345234}
   - component: {fileID: 856345241}
@@ -349,8 +349,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 2747690628134850419, guid: b670ab75dde984907b8570040daa08c5, type: 3}
-  m_Color: {r: 0, g: 0, b: 0.5019608, a: 1}
+  m_Sprite: {fileID: 3625043607559282579, guid: 0d267bc78a0864eb48358689b29ed20a, type: 3}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -370,7 +370,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 10, y: 10, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 3, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -402,25 +402,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &856345240
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 856345230}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 599b14eb2c8bdbe4ca0d40933faa9e28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movementSpeed: 20
-  rb: {fileID: 0}
-  artefactsInHand: 0
-  health: 10
-  levelGenerator: {fileID: 955446374}
-  renderedGrid: {fileID: 696340842}
-  tilemap: {fileID: 612228403}
 --- !u!60 &856345241
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -457,7 +438,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 0.8828125}
+    oldSize: {x: 1, y: 0.5}
     newSize: {x: 1, y: 0.8828125}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -465,13 +446,35 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.25, y: 0.43359375}
-      - {x: -0.5, y: 0}
-      - {x: -0.25, y: -0.43359375}
-      - {x: 0.25, y: -0.43359375}
-      - {x: 0.5, y: 0}
-      - {x: 0.25, y: 0.43359375}
+    - - {x: -0.02734375, y: 0.25}
+      - {x: -0.5, y: 0.02734375}
+      - {x: -0.5, y: -0.015625}
+      - {x: -0.0703125, y: -0.25}
+      - {x: 0.02734375, y: -0.25}
+      - {x: 0.5, y: -0.02734375}
+      - {x: 0.5, y: 0.015625}
+      - {x: 0.0703125, y: 0.25}
   m_UseDelaunayMesh: 0
+--- !u!114 &856345242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 856345230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599b14eb2c8bdbe4ca0d40933faa9e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSpeed: 20
+  artefactsInHand: 0
+  maxHealth: 0
+  health: 6
+  gameStatus: -1
+  levelGenerator: {fileID: 955446374}
+  renderedGrid: {fileID: 696340842}
+  tilemap: {fileID: 612228403}
 --- !u!1 &880430258
 GameObject:
   m_ObjectHideFlags: 0
@@ -613,6 +616,7 @@ MonoBehaviour:
   randomFillPercent: 60
   seaweedPercent: 50
   yellowCoralPercent: 80
+  artefactsInTotal: 5
   renderedGrid: {fileID: 696340842}
   tilemap: {fileID: 612228403}
   autoTexturing: 1
@@ -691,7 +695,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 3625043607559282579, guid: 19fb86013d8c24d6cb8410c0aadf30fa, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.5019608, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -724,7 +728,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1094609442}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -755,12 +759,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f794a973c660844b99e15fb821dc2fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 10
+  movementSpeed: 12
   meleeDamage: 3
   levelGenerator: {fileID: 955446374}
   renderedGrid: {fileID: 696340842}
   tilemap: {fileID: 612228403}
-  diver: {fileID: 856345240}
+  diver: {fileID: 856345242}
   launchPoint: {fileID: 1094609442}
   projectilePrefab: {fileID: 3664814592300283508, guid: 9fcbeee5d366ce74cb9b9740d6dcd34f, type: 3}
 --- !u!60 &1094609450
