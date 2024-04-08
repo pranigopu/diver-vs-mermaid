@@ -105,6 +105,17 @@ public class Mermaid : MonoBehaviour
     }
 
     //================================================
+    // HELPER FUNCTIONS
+
+    // Function to reset the game for the mermaid:
+    void ResetGame()
+    {
+        rb.velocity = Vector2.zero;
+        rb.position = new Vector2(LevelGenerator.width * renderedGrid.cellSize.x / 2, LevelGenerator.height * renderedGrid.cellSize.y / 2);
+        blackboard["visible"] = false;
+    }
+
+    //================================================
     // BEHAVIOURS
 
     //------------------------------------
@@ -204,11 +215,11 @@ public class Mermaid : MonoBehaviour
         if(Time.time - t_melee <= 1)
             return;
         
-        // Setting velocity as zero (so it stops moving when in melee mode):
-        rb.velocity = Vector2.zero;
-
         // Resetting the timer:
         t_melee = Time.time;
+        
+        // Setting velocity as zero (so it stops moving when in melee mode):
+        rb.velocity = Vector2.zero;
 
         // Causing damage to the diver:
         diver.TakeDamage(meleeDamage);
@@ -224,7 +235,6 @@ public class Mermaid : MonoBehaviour
 
     // Variable to keep track of time between two shots:
     float t_shoot;
-    // Function for shooting projectile:
     void Shoot()
 	{
         // If last shot happened less than or equal to 2 seconds ago, do not shoot:
@@ -254,6 +264,7 @@ public class Mermaid : MonoBehaviour
         if(t_gameEnded == 0) // Condition for starting the timer
         {
             t_gameEnded = Time.time;
+            rb.velocity = Vector2.zero;
             return;
         }
         if(Time.time - t_gameEnded <= 1) // Condition for not starting to move toward the map's centre
@@ -282,6 +293,11 @@ public class Mermaid : MonoBehaviour
     // Mermaid perception update function:
     void UpdatePerception()
     {   
+        // Reset game if applicable:
+        if(Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.Alpha2))
+            ResetGame();
+        
+        //________________________
         // Updating perception:
         Vector2Int targetPosition = new Vector2Int((int) (diver.transform.position.x / renderedGrid.cellSize.x), (int) (diver.transform.position.y / renderedGrid.cellSize.y));
         Vector2Int sourcePosition = new Vector2Int((int) (rb.position.x / renderedGrid.cellSize.x), (int) (rb.position.y / renderedGrid.cellSize.y));
@@ -315,7 +331,7 @@ public class Mermaid : MonoBehaviour
                         new BlackboardCondition(
                             "distanceFromTarget", // Defines the key in the blackboard; the condition is w.r.t its value
                             Operator.IS_SMALLER, // Defines the conditional operator to be used
-                            3f, // Checks for condition w.r.t. this value and the specified blackboard value (checks if player is in melee distance)
+                            2f, // Checks for condition w.r.t. this value and the specified blackboard value (checks if player is in melee distance)
                             Stops.SELF, // Stops if condition is not met and allows the parent composite node to move to its next node
                             MeleeBehaviour()), // If the condition is true, executes this action node (stop moving)
                         new Sequence(
