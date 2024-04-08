@@ -105,6 +105,17 @@ public class Mermaid : MonoBehaviour
     }
 
     //================================================
+    // HELPER FUNCTIONS
+
+    // Function to reset the game for the mermaid:
+    void ResetGame()
+    {
+        rb.velocity = Vector2.zero;
+        rb.position = new Vector2(LevelGenerator.width * renderedGrid.cellSize.x / 2, LevelGenerator.height * renderedGrid.cellSize.y / 2);
+        blackboard["visible"] = false;
+    }
+
+    //================================================
     // BEHAVIOURS
 
     //------------------------------------
@@ -282,6 +293,11 @@ public class Mermaid : MonoBehaviour
     // Mermaid perception update function:
     void UpdatePerception()
     {   
+        // Reset game if applicable:
+        if(Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.Alpha2))
+            ResetGame();
+        
+        //________________________
         // Updating perception:
         Vector2Int targetPosition = new Vector2Int((int) (diver.transform.position.x / renderedGrid.cellSize.x), (int) (diver.transform.position.y / renderedGrid.cellSize.y));
         Vector2Int sourcePosition = new Vector2Int((int) (rb.position.x / renderedGrid.cellSize.x), (int) (rb.position.y / renderedGrid.cellSize.y));
