@@ -224,7 +224,6 @@ public class Mermaid : MonoBehaviour
 
     // Variable to keep track of time between two shots:
     float t_shoot;
-    // Function for shooting projectile:
     void Shoot()
 	{
         // If last shot happened less than or equal to 2 seconds ago, do not shoot:
@@ -254,6 +253,7 @@ public class Mermaid : MonoBehaviour
         if(t_gameEnded == 0) // Condition for starting the timer
         {
             t_gameEnded = Time.time;
+            rb.velocity = Vector2.zero;
             return;
         }
         if(Time.time - t_gameEnded <= 1) // Condition for not starting to move toward the map's centre
