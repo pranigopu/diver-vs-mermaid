@@ -315,7 +315,7 @@ public class Mermaid : MonoBehaviour
                         new BlackboardCondition(
                             "distanceFromTarget", // Defines the key in the blackboard; the condition is w.r.t its value
                             Operator.IS_SMALLER, // Defines the conditional operator to be used
-                            3f, // Checks for condition w.r.t. this value and the specified blackboard value (checks if player is in melee distance)
+                            2f, // Checks for condition w.r.t. this value and the specified blackboard value (checks if player is in melee distance)
                             Stops.SELF, // Stops if condition is not met and allows the parent composite node to move to its next node
                             MeleeBehaviour()), // If the condition is true, executes this action node (stop moving)
                         new Sequence(
