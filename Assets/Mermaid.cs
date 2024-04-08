@@ -204,11 +204,11 @@ public class Mermaid : MonoBehaviour
         if(Time.time - t_melee <= 1)
             return;
         
-        // Setting velocity as zero (so it stops moving when in melee mode):
-        rb.velocity = Vector2.zero;
-
         // Resetting the timer:
         t_melee = Time.time;
+        
+        // Setting velocity as zero (so it stops moving when in melee mode):
+        rb.velocity = Vector2.zero;
 
         // Causing damage to the diver:
         diver.TakeDamage(meleeDamage);
