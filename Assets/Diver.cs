@@ -336,6 +336,11 @@ public class Diver : MonoBehaviour
     // NOTE: We shall store in the blackboard only what is needed for the behaviour tree conditions
     void UpdateStatus()
     {
+        // Reset game if applicable:
+        if(Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.Alpha2))
+            ResetGame();
+
+        //________________________
         // If agent position is out-of-bounds (with respect to the level map), snap it back to within bounds:
         ContainAgentWithinMap();
 
@@ -347,11 +352,6 @@ public class Diver : MonoBehaviour
 
         // Storing other user input:
         blackboard["input"] = Input.inputString;
-
-        //________________________
-        // Reset game if applicable:
-        if(Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.Alpha2))
-            ResetGame();
 
         //________________________
         // Checking for game-over conditions:
