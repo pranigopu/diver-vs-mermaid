@@ -143,7 +143,7 @@ public class Mermaid : MonoBehaviour
         if(Time.time - t_randomDirectionChange < max_t_randomDirectionChange)
             return;
 
-        // Resetting the time variables:
+        // Resetting the timer variables:
         t_randomDirectionChange = Time.time;
         max_t_randomDirectionChange = (float) prng.NextDouble() * 3 + 1; // Returns a value between 1 and 3
 
@@ -184,15 +184,13 @@ public class Mermaid : MonoBehaviour
     float t_melee = 0f;
 
     // Precursor to the melee behaviour:
-    // NOTE 1: I have used a trigger instead of collision since a trigger can detect a wider area without halting movement; this helps better simulate melee combat
-    // NOTE 2: I have used both a trigger and a non-trigger collider; the former for detection, the latter for physical collision
-    void OnTriggerEnter2D(Collider2D colliderObject)
+    void OnCollsionEnter2D(Collision2D collisionObject)
     {
-        Diver diver = colliderObject.GetComponent<Diver>();
+        Diver diver = collisionObject.collider.GetComponent<Diver>();
         // Cause damage to the diver (if applicable):
         if(diver != null)
         {
-            // Resetting the time variable:
+            // Resetting the timer:
             t_melee = Time.time;
 
             // Causing damage to the diver:
@@ -209,7 +207,7 @@ public class Mermaid : MonoBehaviour
         // Setting velocity as zero (so it stops moving when in melee mode):
         rb.velocity = Vector2.zero;
 
-        // Resetting the time variable:
+        // Resetting the timer:
         t_melee = Time.time;
 
         // Causing damage to the diver:
@@ -226,13 +224,14 @@ public class Mermaid : MonoBehaviour
 
     // Variable to keep track of time between two shots:
     float t_shoot;
+    // Function for shooting projectile:
     void Shoot()
 	{
         // If last shot happened less than or equal to 2 seconds ago, do not shoot:
         if(Time.time - t_shoot <= 2)
             return;
 
-        // Resetting the time variable:
+        // Resetting the timer:
         t_shoot = Time.time;
 
         // Making the shot:
@@ -247,12 +246,24 @@ public class Mermaid : MonoBehaviour
     //------------------------------------
     // BEHAVIOUR 5: Idle behaviour
 
+    // Variable to keep track of time since the game ended:
+    float t_gameEnded = 0;
     void Idle()
     {
+        // Handling timer to make the mermaid wait for a bit before moving to the map's centre:
+        if(t_gameEnded == 0) // Condition for starting the timer
+        {
+            t_gameEnded = Time.time;
+            return;
+        }
+        if(Time.time - t_gameEnded <= 1) // Condition for not starting to move toward the map's centre
+            return;
+
+        //________________________
         Vector2 difference = new Vector2(LevelGenerator.width * renderedGrid.cellSize.x / 2, LevelGenerator.height * renderedGrid.cellSize.y / 2) - rb.position;
-        // The mermaid moves fast toward the centre of the map if not already around there:
+        // The mermaid moves fast toward the centre of the map if not already there:
         if(difference.magnitude > 2)
-            rb.velocity = difference.normalized * movementSpeed * 2;
+            rb.velocity = difference.normalized * difference.magnitude * movementSpeed;
         else
             rb.velocity = Vector2.zero;
         return;
@@ -270,29 +281,28 @@ public class Mermaid : MonoBehaviour
     float t_updateVisibility = 0f;
     // Mermaid perception update function:
     void UpdatePerception()
-    {
-        // If last sighting happened less than or equal to 3 seconds ago, do not update:
-        if((bool) blackboard["visible"] == true && Time.time - t_updateVisibility <= 3)
-            return;
-        
-        // Resetting the time variables:
-        t_updateVisibility = Time.time;
-
-        //________________________
+    {   
         // Updating perception:
         Vector2Int targetPosition = new Vector2Int((int) (diver.transform.position.x / renderedGrid.cellSize.x), (int) (diver.transform.position.y / renderedGrid.cellSize.y));
         Vector2Int sourcePosition = new Vector2Int((int) (rb.position.x / renderedGrid.cellSize.x), (int) (rb.position.y / renderedGrid.cellSize.y));
-        levelGenerator.UpdateNeighbourhoodData(targetPosition.x, targetPosition.y);
         blackboard["distanceFromTarget"] = (targetPosition - sourcePosition).magnitude;
-        blackboard["visible"] = (levelGenerator.total_5_by_5[0] >= 12 && levelGenerator.total_3_by_3[0] >= 5)|| (Mathf.Abs(targetPosition.x - sourcePosition.x) < 5 && Mathf.Abs(targetPosition.y - sourcePosition.y) < 5);
         blackboard["gameStatus"] = diver.gameStatus;
+        if(diver.gameStatus == Diver.ONGOING) // Ensuring the "game ended" timer is set to 0 when the game is ongoing
+            t_gameEnded = 0;
+        // Only update visibility if the last update of visibility happened more than 3 seconds ago:
+        if((bool) blackboard["visible"] == false || Time.time - t_updateVisibility > 3)
+        {
+            levelGenerator.UpdateNeighbourhoodData(targetPosition.x, targetPosition.y);
+            blackboard["visible"] = (levelGenerator.total_5_by_5[0] >= 12 && levelGenerator.total_3_by_3[0] >= 5)|| (Mathf.Abs(targetPosition.x - sourcePosition.x) < 5 && Mathf.Abs(targetPosition.y - sourcePosition.y) < 5);
+            // Resetting the timer for visibility update:
+            t_updateVisibility = Time.time;
+        }
     }
 
     // Behaviour tree:
     Root CreateBehaviourTree()
     {
         return new Root(new Service(
-                0.1f,
                 () => UpdatePerception(),
                 new Selector(
                     new BlackboardCondition(

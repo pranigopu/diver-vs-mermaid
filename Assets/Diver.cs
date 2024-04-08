@@ -371,7 +371,6 @@ public class Diver : MonoBehaviour
     Root CreateBehaviourTree()
     {
         return new Root(new Service(
-                0.1f,
                 () => UpdateStatus(),
                 new Selector(
                     new BlackboardCondition(
