@@ -19,10 +19,10 @@ The level generator relies on random fill (based on preset proportions) to gener
 
 Each of the aforementioned tile types have unique properties:
 
-- <b style="color:blue">Water</b>: Allows fast travel
-- <b style="color:green">Seaweed</b>: Provides cover and allows relatively fast travel (though a bit slower than water)
-- <b style="color:yellow">Yellow coral</b>: Provides cover and allows only relatively slow travel
-- <b style="color:red">Red coral</b>: Provides cover but hinders travel significantly (almost to a halt)
+- <p style="color:blue">Water</p>: Allows fast travel
+- <p style="color:green">Seaweed</p>: Provides cover and allows relatively fast travel (though a bit slower than water)
+- <p style="color:yellow">Yellow coral</p>: Provides cover and allows only relatively slow travel
+- <p style="color:red">Red coral</p>: Provides cover but hinders travel significantly (almost to a halt)
 
 **NOTE**: _These properties only apply to the diver agent (the player); the mermaid can move freely across the map._
 
