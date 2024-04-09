@@ -68,7 +68,7 @@ public class LevelGenerator : MonoBehaviour
 
     //------------------------------------
     // Variable to indicate if level has been generated:
-    [HideInInspector] public bool generationComplete = false;
+    [HideInInspector] public bool generationComplete;
 
     //================================================
     // MAIN FUNCTIONS
@@ -91,10 +91,11 @@ public class LevelGenerator : MonoBehaviour
             artefactTexture = GetTexture(Color.black);
         }
 
+        generationComplete = false;
         InitialiseGrid();
         ApplyCellularAutomata();
-        GenerateTilemap();
         PlaceArtefacts();
+        GenerateTilemap();
         generationComplete = true;
     }
 
@@ -107,14 +108,14 @@ public class LevelGenerator : MonoBehaviour
         StepwiseGeneration(Input.inputString);
         
         // Generate new playable map:
-        if(Input.GetKey(KeyCode.Return) || generationComplete == false)
+        if(Input.GetKey(KeyCode.Return))
         {
             generationComplete = false;
             tilemap.ClearAllTiles();
             InitialiseGrid();
             ApplyCellularAutomata();
-            GenerateTilemap();
             PlaceArtefacts();
+            GenerateTilemap();
             generationComplete = true;
         }
 
@@ -189,43 +190,38 @@ public class LevelGenerator : MonoBehaviour
     // Step-wise generation for testing and demonstration:
     void StepwiseGeneration(string c)
     {
+        generationComplete = false;
         if(String.Equals(c, "0"))
         // Generating a new random grid:
         {
             tilemap.ClearAllTiles();
             InitialiseGrid();
             GenerateTilemap();
-            generationComplete = false;
         }
         else if(String.Equals(c, "1"))
         // Re-applying only cellular automaton 1 to current grid:
         {
             ApplyCellularAutomata(50, 0, 0);
             GenerateTilemap();
-            generationComplete = false;
         }
         else if(String.Equals(c, "2"))
         // Re-applying only cellular automaton 2 to current grid:
         {
             ApplyCellularAutomata(0, 50, 0);
             GenerateTilemap();
-            generationComplete = false;
         }
         else if(String.Equals(c, "3"))
         // Re-applying only cellular automaton 3 to current grid:
         {
             ApplyCellularAutomata(0, 0, 10);
-            GenerateTilemap();
             PlaceArtefacts();
+            GenerateTilemap();
             generationComplete = true;
         }
     }
 
     //================================================
     // STAGE A: Generating initial grid of filled & empty cells
-
-    //------------------------------------
-    // STAGE A.1: Initialising the grid array
 
     public void InitialiseGrid()
     {
@@ -253,41 +249,6 @@ public class LevelGenerator : MonoBehaviour
             }
         }
     }
-    
-    //------------------------------------
-    // STAGE A.2: Generating the tilemap as per the grid
-
-    // The following is what is ultimately seen on-screen...
-    void GenerateTilemap()
-    {        
-        // Variable to store the chosen texture per iteration:
-        Texture2D chosenTexture = waterTexture;
-
-		for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                // Choosing the tile to set in this position:
-                switch(grid[x, y])
-                {
-                    case 1:
-                        chosenTexture = seaweedTexture;
-                        break;
-                    case 2:
-                        chosenTexture = yellowCoralTexture;
-                        break;
-                    case 3:
-                        chosenTexture = redCoralTexture;
-                        break;
-                    default:
-                        chosenTexture = waterTexture;
-                        break;
-                }
-                // Setting the chosen tile in the right position:
-                tilemap.SetTile(new Vector3Int(x, y, 0), GetTile(chosenTexture));
-            }
-		}
-	}
 
     //================================================
     // STAGE B: Cellular automata
@@ -417,7 +378,8 @@ public class LevelGenerator : MonoBehaviour
     }
 
     //------------------------------------
-    // Running each automaton for a set number of iterations in a set order:
+    // STAGE B.3: Running each cellular automaton for a set number of iterations in a set order
+    
     void ApplyCellularAutomata(int coralGrowthIterations = 25, int seaweedGrowthIterations = 25, int waterSpacesGrowthIterations = 10)
     // NOTE: k1, k2 and k3 are the number of iterations for which to apply cellular automata 1, 2 and 3 respectively
     {
@@ -470,9 +432,44 @@ public class LevelGenerator : MonoBehaviour
                 
                 // Place artefact and leave the loop:
                 grid[x, y] = -1;
-                tilemap.SetTile(new Vector3Int(x, y, 0), GetTile(artefactTexture));
                 break;
             }
         }
     }
+
+    //------------------------------------
+    // Function to generate the final level's tilemap:
+    void GenerateTilemap()
+    {        
+        // Variable to store the chosen texture per iteration:
+        Texture2D chosenTexture = waterTexture;
+
+		for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                // Choosing the tile to set in this position:
+                switch(grid[x, y])
+                {
+                    case -1:
+                        chosenTexture = artefactTexture;
+                        break;
+                    case 0:
+                        chosenTexture = waterTexture;
+                        break;
+                    case 1:
+                        chosenTexture = seaweedTexture;
+                        break;
+                    case 2:
+                        chosenTexture = yellowCoralTexture;
+                        break;
+                    case 3:
+                        chosenTexture = redCoralTexture;
+                        break;
+                }
+                // Setting the chosen tile in the right position:
+                tilemap.SetTile(new Vector3Int(x, y, 0), GetTile(chosenTexture));
+            }
+		}
+	}
 }

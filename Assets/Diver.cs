@@ -133,21 +133,21 @@ public class Diver : MonoBehaviour
     void GameOver(int k)
     {
         gameStatus = k;
-
         if(gameStatus == LOSE)
         {
             Debug.Log("Game Over; YOU DIED! Enjoy being a ghost! | Press 'Return' to replay...");
             
-            // EXTRA: Ghostly effect:
+            // EXTRA: Ghostly effect (effect of losing):
             GetComponent<SpriteRenderer>().color = Color.white;
             GetComponent<PolygonCollider2D>().enabled = false; // Disabling collider for "ghostly" effect
             movementSpeed = 10f;
         }
         else if(gameStatus == WIN)
         {
-            Debug.Log("Game Over; YOU WON! Enjoy being a mermaid!\n Your time: " + (Time.time - t_start).ToString() + " seconds | Press 'Return' to replay...");
+            float score = 1000 * health / (Time.time - t_start); // Score is inversely proportional to time and directly proportional to health
+            Debug.Log("Game Over; YOU WON! Enjoy being a mermaid!\n Your score: " + score.ToString() + " | Press 'Return' to replay...");
             
-            // EXTRA: Become a mermaid:
+            // EXTRA: Become a mermaid (effect of winning):
             GetComponent<SpriteRenderer>().color = new Color(1, 0.5f, 0, 1);
             movementSpeed = 30f;
         }
