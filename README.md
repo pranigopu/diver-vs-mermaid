@@ -261,4 +261,8 @@ As mentioned before, the order of running the cellular automata shapes the final
 
 **EXAMPLES**:
 
-![](https://github.com/pranigopu/underseaExplorers/blob/86b9346fb077326c9cb442140143e49120d8ab2d/Media/levelGeneration_1.png)
+Example 1 | Example 2
+---|---
+![](https://github.com/pranigopu/underseaExplorers/blob/86b9346fb077326c9cb442140143e49120d8ab2d/Media/levelGeneration_1.png) | ![](https://github.com/pranigopu/underseaExplorers/blob/86b9346fb077326c9cb442140143e49120d8ab2d/Media/levelGeneration_2.png)
+
+
