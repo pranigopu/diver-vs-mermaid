@@ -409,7 +409,8 @@ public class LevelGenerator : MonoBehaviour
     // STAGE C: POST-PROCESSING
 
     //------------------------------------
-    // Function to place some artefacts around the map at random:
+    // STAGE C.1: Placing some artefacts around the map at random
+    
     void PlaceArtefacts()
     {
         // Initialising random number generator using seed:
@@ -438,7 +439,8 @@ public class LevelGenerator : MonoBehaviour
     }
 
     //------------------------------------
-    // Function to generate the final level's tilemap:
+    // STAGE C.2: Generating the final level's tilemap
+
     void GenerateTilemap()
     {        
         // Variable to store the chosen texture per iteration:
