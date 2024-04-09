@@ -259,9 +259,139 @@ As mentioned before, the order of running the cellular automata shapes the final
 - Water space growth for 10 iterations
 - Seaweed growth for 25 iterations
 
-**EXAMPLES**:
+**EXAMPLES (AFTER POST-PROCESSING)**:
 
+Example 1 | Example 2
 ---|---
 ![](https://github.com/pranigopu/underseaExplorers/blob/86b9346fb077326c9cb442140143e49120d8ab2d/Media/levelGeneration_1.png) | ![](https://github.com/pranigopu/underseaExplorers/blob/86b9346fb077326c9cb442140143e49120d8ab2d/Media/levelGeneration_2.png)
 
+## STAGE C: Post-processing
+Post-processing involves two steps:
 
+1. Placing a set number of artefacts at random positions around the grid
+2. Generating the actual tilemap to be rendered in-game
+
+---
+
+For reference, here is the code for placing the artefacts:
+
+```c
+void PlaceArtefacts()
+{
+    // Initialising random number generator using seed:
+    System.Random prng = InitialisePRNG();
+
+    int x = 0;
+    int y = 0;
+
+    for(int i = 0; i < artefactsInTotal; i++)
+    {   
+        while(true)
+        {
+            // Generate random coordinates:
+            x = prng.Next(0, width);
+            y = prng.Next(0, height);
+            
+            // If artefact already in (x, y):
+            if(grid[x, y] == -1)
+                continue;
+            
+            // Place artefact and leave the loop:
+            grid[x, y] = -1;
+            break;
+        }
+    }
+}
+```
+
+It merely runs through `artefactsInTotal` random positions; each iteration, it loops until it finds a random position without an artefact. Note that the integer to indicate an artefact in the grid is -1.
+
+---
+
+The tilemap generation uses the following functions:
+
+**AUTOMATIC TEXTURE CREATION**:
+
+```c
+// Generating the texture automatically (only used if `autoTexturing = false`):
+public Texture2D GetTexture(Color c)
+{
+    Texture2D texture = new Texture2D(textureGridDimensions.x, textureGridDimensions.y);
+    // Assigning all the pixels with the right colors:
+    for(int i = 0; i < textureGridDimensions.x; i++)
+        for(int j = 0; j < textureGridDimensions.y; j++)
+            texture.SetPixel(i, j, c);
+
+    texture.Apply();
+    return texture;
+}
+```
+
+The above generates a solid colour texture (with the dimensions given by a global variable `textureGridDimensions`) by setting each pixel within the texture grid with the given colour. In particular, we have the following calls of the above function in the `Start` method of the file `LevelGenerator.cs`.
+
+```c
+if(autoTexturing)
+{
+    waterTexture = GetTexture(Color.blue);
+    seaweedTexture = GetTexture(Color.green);
+    yellowCoralTexture = GetTexture(Color.yellow);
+    redCoralTexture = GetTexture(Color.red);
+    artefactTexture = GetTexture(Color.black);
+}
+```
+
+**NOTE** _Each of the above variables are predeclared global variables of type_ `Texture2D`.
+
+**TILE CREATION ACCORDING TO GIVE TEXTURE**:
+
+```c
+// Generating a tile according to the given texture:
+public Tile GetTile(Texture2D t)
+{
+    Sprite sprite = Sprite.Create(t, new Rect(0, 0, textureGridDimensions.x, textureGridDimensions.y), new Vector2(0.5f, 0.5f));
+    // Arguments for the above (in order): Texture, Grid, Pivot (of the sprite w.r.t. the grid)
+    Tile tile = ScriptableObject.CreateInstance<Tile>();
+    tile.sprite = sprite;
+    return tile;
+}
+```
+
+The above generates a tile given a texture `t`. In `LevelGenerator.cs`, we call the above as follows:
+
+```c
+void GenerateTilemap()
+{        
+    // Variable to store the chosen texture per iteration:
+    Texture2D chosenTexture = waterTexture;
+
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            // Choosing the tile to set in this position:
+            switch(grid[x, y])
+            {
+                case -1:
+                    chosenTexture = artefactTexture;
+                    break;
+                case 0:
+                    chosenTexture = waterTexture;
+                    break;
+                case 1:
+                    chosenTexture = seaweedTexture;
+                    break;
+                case 2:
+                    chosenTexture = yellowCoralTexture;
+                    break;
+                case 3:
+                    chosenTexture = redCoralTexture;
+                    break;
+            }
+            // Setting the chosen tile in the right position:
+            tilemap.SetTile(new Vector3Int(x, y, 0), GetTile(chosenTexture));
+        }
+    }
+}
+```
+
+**NOTE**: `tilemap` _is a predeclated global variable of type_ `Tilemap`.
