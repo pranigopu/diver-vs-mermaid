@@ -41,7 +41,7 @@ _Now, each of the above stages shall be detailed more technically_...
 ## STAGE A: Initial 2D grid of filled and empty cells
 For reference, here is the code for the associated function:
 
-```c#
+```c
 public void InitialiseGrid()
 {
     
@@ -70,3 +70,10 @@ public void InitialiseGrid()
 }
 ```
 
+Here, we see three key variables:
+
+- `randomFillPercent`: Specifies how much of the map should be non-water tiles (excluding artefacts)
+- `seaweedPercent`: Specifies how much of the map should be seaweed tiles
+- `yellowCoralPercent`: Specifies how much of the map should be yellow coral tiles
+
+Note that $CoralPercent = 1 -$ `seaweedPercent`, and it is with respect to $CoralPercentage$ that `yellowCoralPercent` is defined. Hence, note that $RedCoralPercent = 1 -$ `yellowCoralPercent`. Hence, we do not define $CoralPercentage$ and $RedCoralPercent$ as they are directly inferred from `seaweedPercent` and `yellowCoralPercent`.
