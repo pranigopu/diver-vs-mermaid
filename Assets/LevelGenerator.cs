@@ -254,7 +254,7 @@ public class LevelGenerator : MonoBehaviour
     // STAGE B: Cellular automata
 
     //------------------------------------
-    // STAGE B.1: Function for getting relevant neighbourhood data
+    // STAGE B.1: Getting relevant neighbourhood data
     
     // Data structures that can be conveniently accessed by other functions:
     [HideInInspector] public int[] total_3_by_3 = {0, 0, 0, 0};
