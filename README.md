@@ -164,3 +164,101 @@ The function is called each time data about a particular grid cell (correspondin
 **NOTE**: _The previous data of each array has to be cleared before update, hence the count-resetting loop at the start._
 
 ### STAGE B.2: Cellular automata
+Three cellular automata are used for the following functions:
+
+1. Growing corals (red and yellow)
+2. Growing seaweed
+3. Growing water spaces
+
+They are applied sequentially, and each is applied for a set number of iterations. The order is key, because each cellular automaton relies on certain conditions to be effective, and these conditions are only achieved in a certain order. The coral growth is made to happen in clusters that are not too large. The randomly placed seaweed from stage A helps contain and shape the growth of coral clusters. The water spaces are made to clear excess scattered non-water tiles ("scattered" here means surrounded by too many water tiles so as to not be a part any cluster). Finally, the seaweed is made to grow in scattered, non-clustered patterns so as to ensure the map has not just clean passageways amid clusters of hiding spaces that hinder movement but also some hiding spaces that do not hinder movement. The seaweed growth also introduces some aesthetic messinenss that may help make the map more closely resemble a natural underwater terrain.
+
+---
+
+For reference, here are the functions for the three cellular automata:
+
+**CORAL GROWTH**:
+
+```c
+int GrowCoral(int x, int y, System.Random prng)
+{
+    UpdateNeighbourhoodData(x, y);
+    
+    // Relevant values (calculated for both coral types together):
+    int a = total_3_by_3[2] + total_3_by_3[3];
+    int b = total_5_by_5[2] + total_5_by_5[3];
+    
+    // If current tile is a water tile...
+    if(grid[x, y] == 0)
+    {
+        if(a >= 4 && b <= 12)
+        {
+            // Randomly picking between coral types based on predetermined probabilities:
+            if(prng.Next(0, 100) < yellowCoralPercent)
+                return 2;
+            else
+                return 3;
+        }
+    }
+    // If current tile is not a water or seaweed tile...
+    else if(grid[x, y] == 2 || grid[x, y] == 3)
+        if(a <= 1 || b > 18)
+            return 0;
+
+    return grid[x, y];
+}
+```
+
+The first condition ensures that a water tile surrounded by enough coral tiles in a smaller ($3 \times 3$) neighbourhood is turned to coral, provided there are not too many corals in a wider ($5 \times 5$)  neighbourhood. Furthermore, note that the coral tiles are picked in random based on the preset `yellowCoralPercent`; this is an easy and effective way of adding variety to the map both aesthetically and functionally. This ensures clustering and little to no scattered growth of coral. The second condition ensures that a coral tile surrounded by too few coral tiles in a smaller neighbourhood or by too many water tiles in a wider water tiles is overcome by water. This ensures that any scattered coral tiles are removed, further ensuring clustering of coral.
+
+**WATER GROWTH**:
+
+```c
+int GrowWaterSpaces(int x, int y)
+{
+    UpdateNeighbourhoodData(x, y);
+
+    if(grid[x, y] >= 1 && total_3_by_3[0] >= 5 || total_5_by_5[0] >= 18)
+        return 0;
+    
+    return grid[x, y];
+}
+```
+
+The sole condition ensures that if a non-water tile is surrounded by too much water ("too much" is decided differently based on the neighbourhood size, as seen in the condition), the tile is overcome by water. This helps limit scattered non-water tiles and helps clear out passageways between coral clusters, which is useful in-game when traversing the map.
+
+**SEAWEED GROWTH**:
+
+```c
+int GrowSeaweed(int x, int y)
+{
+    UpdateNeighbourhoodData(x, y);
+
+    // Relevant values (calculated only for seaweed):
+    int a = total_adjacent[1];
+    int b = total_3_by_3[1];
+
+    // If current tile is a seaweed tile...
+    if(grid[x, y] == 1)
+        if(a >= 2)
+            return 0;
+    // If current tile is a water tile...
+    else if(grid[x, y] == 0)
+        if(b >= 4)
+            return 1;
+
+    return grid[x, y];
+}
+```
+
+The first condition ensures that a seaweed tile surrounded by too many adjacent seaweed dies out (i.e. is replaced by water). Note that `a >= n` (present as `a >= 2` in the above function) ensures greater scattering the lower `n` is (provided that `n` is any integer from 1 to 4); hence, if you want more clustered seaweed, choose a higher `n`. The second condition ensures that a water tile surrounded by enough seaweed becomes a seaweed tile; this enourages some seaweed growth beyond the clustered non-water spaces. Note that `b >= 4` (present as `b >= 4` in the above function) ensures greater seaweed growth the lower `n` is (provided that `n` is any integer from 1 to 8); hence, if you want most seaweed growth beyond the clustered non-water spaces, choose a lower `n`.
+
+### STAGE B.3: Running each cellular automaton for a set number of iterations in a set order
+As mentioned before, the order of running the cellular automata shapes the final result. Furthermore, the number of iterations for which each automaton is run can also be significant upto a certain point (beyond which the map may stabilise and no updates may occur). The number of iterations may need to be changed for a better result if other parameters (such as `randomFillPercent` or `seaweedPercent`) are changed. Based on trial-and-error, the following number of iterations are decided in the following order (given the parameters `randomFillPercent` = 60 and `seaweedPercent` = 80):
+
+- Coral growth for 25 iterations
+- Water space growth for 10 iterations
+- Seaweed growth for 25 iterations
+
+**EXAMPLES**:
+
+![](https://github.com/pranigopu/underseaExplorers/blob/86b9346fb077326c9cb442140143e49120d8ab2d/Media/levelGeneration_1.png)
