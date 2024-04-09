@@ -345,27 +345,6 @@ public class LevelGenerator : MonoBehaviour
         return grid[x, y];
     }
 
-    // Cellular automaton 2: Seaweed growth:
-    int GrowSeaweed(int x, int y)
-    {
-        UpdateNeighbourhoodData(x, y);
-
-        // Relevant values (calculated only for seaweed):
-        int a = total_adjacent[1];
-        int b = total_3_by_3[1];
-
-        // If current tile is a seaweed tile...
-        if(grid[x, y] == 1)
-            if(a >= 4)
-                return 0;
-        // If current tile is a water tile...
-        else if(grid[x, y] == 0)
-            if(b >= 4)
-                return 1;
-    
-        return grid[x, y];
-    }
-
     // Cellular automaton 2: Water space growth:
     int GrowWaterSpaces(int x, int y)
     {
@@ -377,11 +356,31 @@ public class LevelGenerator : MonoBehaviour
         return grid[x, y];
     }
 
+    // Cellular automaton 3: Seaweed growth:
+    int GrowSeaweed(int x, int y)
+    {
+        UpdateNeighbourhoodData(x, y);
+
+        // Relevant values (calculated only for seaweed):
+        int a = total_adjacent[1];
+        int b = total_3_by_3[1];
+
+        // If current tile is a seaweed tile...
+        if(grid[x, y] == 1)
+            if(a >= 2)
+                return 0;
+        // If current tile is a water tile...
+        else if(grid[x, y] == 0)
+            if(b >= 4)
+                return 1;
+    
+        return grid[x, y];
+    }
+
     //------------------------------------
     // STAGE B.3: Running each cellular automaton for a set number of iterations in a set order
     
     void ApplyCellularAutomata(int coralGrowthIterations = 25, int seaweedGrowthIterations = 25, int waterSpacesGrowthIterations = 10)
-    // NOTE: k1, k2 and k3 are the number of iterations for which to apply cellular automata 1, 2 and 3 respectively
     {
         // Initialising random number generator using seed:
         System.Random prng = InitialisePRNG();
@@ -391,18 +390,18 @@ public class LevelGenerator : MonoBehaviour
             for(int x = 0; x < width; x++)
                 for(int y = 0; y < height; y++)
                     grid[x, y] = GrowCoral(x, y, prng);
-
-        // Grow seaweed to some extent (for aesthetics):
-        for(int i = 0; i < seaweedGrowthIterations; i++)
-            for(int x = 0; x < width; x++)
-                for(int y = 0; y < height; y++)
-                    grid[x, y] = GrowSeaweed(x, y);
         
         // Grow water spaces to some extent (for clearer spaces and passages):
         for(int i = 0; i < waterSpacesGrowthIterations; i++)
             for(int x = 0; x < width; x++)
                 for(int y = 0; y < height; y++)
                     grid[x, y] = GrowWaterSpaces(x, y);
+        
+        // Grow seaweed to some extent (for aesthetics):
+        for(int i = 0; i < seaweedGrowthIterations; i++)
+            for(int x = 0; x < width; x++)
+                for(int y = 0; y < height; y++)
+                    grid[x, y] = GrowSeaweed(x, y);
     }
 
     //================================================
