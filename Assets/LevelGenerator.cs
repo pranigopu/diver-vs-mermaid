@@ -107,8 +107,9 @@ public class LevelGenerator : MonoBehaviour
         StepwiseGeneration(Input.inputString);
         
         // Generate new playable map:
-        if(Input.GetKey(KeyCode.Return))
+        if(Input.GetKey(KeyCode.Return) || generationComplete == false)
         {
+            generationComplete = false;
             tilemap.ClearAllTiles();
             InitialiseGrid();
             ApplyCellularAutomata();

@@ -1,5 +1,14 @@
 # NOTES
 
+## Orthographic vs. perspective projection
+Orthographic projection (also orthogonal projection and analemma) is a means of representing three-dimensional objects in two dimensions. Orthographic projection is a form of parallel projection in which all the projection lines are orthogonal to the projection plane, resulting in every plane of the scene appearing in affine transformation on the viewing surface.
+
+> REFERENCE: https://en.wikipedia.org/wiki/Orthographic_projection
+
+Our eyes are used to perspective viewing where distant objects appear smaller. Orthographic projection often seems a bit odd at first, because objects stay the same size regardless of their distance. It is like viewing the scene from an infinitely distant point. Nevertheless, orthographic viewing can be very useful, because it provides a more “technical” insight into the scene, making it easier to model and judge proportions.
+
+> REFERENCE: https://docs.blender.org/manual/en/latest/editors/3dview/navigate/projections.html
+
 ## Kinematic colliders
 To enable colliders such that the sprites can move but not be moved, use the "Kinematic" option instead of "Dynamic" option.
 

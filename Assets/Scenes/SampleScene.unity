@@ -470,7 +470,7 @@ MonoBehaviour:
   movementSpeed: 20
   artefactsInHand: 0
   maxHealth: 0
-  health: 6
+  health: 10
   gameStatus: -1
   levelGenerator: {fileID: 955446374}
   renderedGrid: {fileID: 696340842}
@@ -485,6 +485,7 @@ GameObject:
   m_Component:
   - component: {fileID: 880430261}
   - component: {fileID: 880430260}
+  - component: {fileID: 880430262}
   - component: {fileID: 880430259}
   m_Layer: 0
   m_Name: Main Camera
@@ -536,7 +537,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 45.438408
+  orthographic size: 45
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -562,11 +563,23 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 80, y: 45, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &880430262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880430258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9787fd585b11a04f90bdb56d7341516, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &955446371
 GameObject:
   m_ObjectHideFlags: 0

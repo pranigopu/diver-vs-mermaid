@@ -44,7 +44,7 @@ public class Diver : MonoBehaviour
     // Variable for storing maximum health:
     [HideInInspector] public int maxHealth;
     // Variable to keep track of health points:
-    [SerializeField] int health = 6;
+    [SerializeField] int health = 10;
     // Constants to make the game's status easier to read:
     public const int WIN = 1;
     public const int LOSE = 0;
