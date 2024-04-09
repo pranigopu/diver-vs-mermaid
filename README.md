@@ -313,7 +313,7 @@ The tilemap generation uses the following functions:
 **AUTOMATIC TEXTURE CREATION**:
 
 ```c
-// Generating the texture automatically (only used if `autoTexturing = false`):
+// Only used if `autoTexturing = false`)
 public Texture2D GetTexture(Color c)
 {
     Texture2D texture = new Texture2D(textureGridDimensions.x, textureGridDimensions.y);
@@ -345,10 +345,11 @@ if(autoTexturing)
 **TILE CREATION ACCORDING TO GIVE TEXTURE**:
 
 ```c
-// Generating a tile according to the given texture:
 public Tile GetTile(Texture2D t)
 {
-    Sprite sprite = Sprite.Create(t, new Rect(0, 0, textureGridDimensions.x, textureGridDimensions.y), new Vector2(0.5f, 0.5f));
+    Sprite sprite = Sprite.Create(t,
+                                  new Rect(0, 0, textureGridDimensions.x, textureGridDimensions.y),
+                                  new Vector2(0.5f, 0.5f));
     // Arguments for the above (in order): Texture, Grid, Pivot (of the sprite w.r.t. the grid)
     Tile tile = ScriptableObject.CreateInstance<Tile>();
     tile.sprite = sprite;
