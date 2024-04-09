@@ -260,7 +260,7 @@ public class LevelGenerator : MonoBehaviour
     [HideInInspector] public int[] total_3_by_3 = {0, 0, 0, 0};
     [HideInInspector] public int[] total_5_by_5 = {0, 0, 0, 0};
     [HideInInspector] public int[] total_adjacent = {0, 0, 0, 0};
-    // NOTE 1: Storing data in global data structures rather than returning them in functions avoids coding and computational complexity
+    // NOTE 1: Storing data in global data structures rather than returning them in functions avoids coding complexity when making function calls
     // NOTE 2: The grid value (i.e. cell type) and indices of each of the above coincide
 
     // Function to update neighbourhood data:
@@ -472,6 +472,6 @@ public class LevelGenerator : MonoBehaviour
                 // Setting the chosen tile in the right position:
                 tilemap.SetTile(new Vector3Int(x, y, 0), GetTile(chosenTexture));
             }
-		}
 	}
+    }
 }
