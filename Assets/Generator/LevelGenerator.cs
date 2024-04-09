@@ -397,7 +397,11 @@ public class LevelGenerator : MonoBehaviour
                 for(int y = 0; y < height; y++)
                     grid[x, y] = GrowWaterSpaces(x, y);
         
+<<<<<<< HEAD:Assets/Generator/LevelGenerator.cs
         // Grow seaweed to some extent (for aesthetics and easy-to-traverse hiding places):
+=======
+        // Grow seaweed to some extent (for aesthetics):
+>>>>>>> c85e6200fbc02762fd123e7e4470bf0567c134a9:Assets/LevelGenerator.cs
         for(int i = 0; i < seaweedGrowthIterations; i++)
             for(int x = 0; x < width; x++)
                 for(int y = 0; y < height; y++)
@@ -471,6 +475,6 @@ public class LevelGenerator : MonoBehaviour
                 // Setting the chosen tile in the right position:
                 tilemap.SetTile(new Vector3Int(x, y, 0), GetTile(chosenTexture));
             }
-		}
 	}
+    }
 }
