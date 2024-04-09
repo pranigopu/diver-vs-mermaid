@@ -39,6 +39,7 @@ Finally, we have post-processing (stage C) wherein we (1) place artefacts at ran
 _Now, each of the above stages shall be detailed more technically_...
 
 ## STAGE A: Initial 2D grid of filled and empty cells
+For reference, here is the code for the associated function:
 
 ```c#
 public void InitialiseGrid()
@@ -67,4 +68,5 @@ public void InitialiseGrid()
         }
     }
 }
-    ```
+```
+
