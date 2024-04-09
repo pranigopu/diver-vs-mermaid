@@ -77,3 +77,10 @@ Here, we see three key variables:
 - `yellowCoralPercent`: Specifies how much of the map should be yellow coral tiles
 
 Note that $CoralPercent = 1 -$ `seaweedPercent`, and it is with respect to $CoralPercentage$ that `yellowCoralPercent` is defined. Hence, note that $RedCoralPercent = 1 -$ `yellowCoralPercent`. Hence, we do not define $CoralPercentage$ and $RedCoralPercent$ as they are directly inferred from `seaweedPercent` and `yellowCoralPercent`.
+
+---
+
+Hence, the grid initialisation simply iterates through every possible position of the predefined play area and fills the grid associated with that position according to the above percentages. First, it begins by deciding whether to fill the tile or not based on `randomFillPercent`. If no, it assigns 0 to the grid cell and continues to the next position. If yes, it then decides whether to fill the tile as a seaweed or not based on `seaweedPercent`. If yes, it assigns 1 to the grid cell and continues to the next position. If no, it decides whether to fill the tile as a yellow coral or not based on `yelloCoralPercent`. If yes, it assigs 2 to the grid cell and continues to the next position. If no, it assigns 3 (for red coral) to the grid cell. The whole process goes on until every possible position is covered.
+
+## STAGE B: Cellular automata
+### STAGE B.1: Getting relevant neighbourhood data
