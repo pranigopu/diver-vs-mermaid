@@ -97,14 +97,10 @@ Before applying cellular automata, some data about the neighbourhood of a grid c
 For reference, here is the code for the associated function:
 
 ```c
-// Data structures that can be conveniently accessed by other functions:
 [HideInInspector] public int[] total_3_by_3 = {0, 0, 0, 0};
 [HideInInspector] public int[] total_5_by_5 = {0, 0, 0, 0};
 [HideInInspector] public int[] total_adjacent = {0, 0, 0, 0};
-// NOTE 1: Storing data in global data structures rather than returning them in functions avoids coding and computational complexity
-// NOTE 2: The grid value (i.e. cell type) and indices of each of the above coincide
 
-// Function to update neighbourhood data:
 public void UpdateNeighbourhoodData(int x, int y)
 // Types: 0 = Water, 1 = Seaweed, 2 = Red Coral, 3 = Yellow Coral
 {
@@ -163,7 +159,7 @@ The data (for each of the three kinds) are collected in three integer arrays of 
 
 **NOTE**: _The indices correspond directly to the tile type, i.e. index 0 holds the number of water tiles, etc._
 
-The function is called each time data about a particular grid cell (corresponding to a map position) is needed. All three are updated at once since it is more computationally economical that way. The update process consists of iterating around a $5 \times 5$ neighbourhood of the given cell and incrementing the count of the tile type encountered under certain conditions (of course, the given cell's own position is skipped). The primary conditions is to ensure that the position being traversed are not the given cell's position and is within the grid. The secondary conditions are to handle the counts of tile types within a $3 \times 3$ neighbourhood (which is a subset of the $5 \times 5$ neighbourhood) and adjacent positions of the given cell.
+The function is called each time data about a particular grid cell (corresponding to a map position) is needed. All three are updated at once since it is more computationally economical that way. Furthermore, Storing data in global data structures rather than returning them in functions avoids the hassle of handling the return values when calling the function. The update process consists of iterating around a $5 \times 5$ neighbourhood of the given cell and incrementing the count of the tile type encountered under certain conditions (of course, the given cell's own position is skipped). The primary conditions is to ensure that the position being traversed is not either the given cell's position or an artefact and is within the grid. The secondary conditions are to handle the counts of tile types within a $3 \times 3$ neighbourhood (which is a subset of the $5 \times 5$ neighbourhood) and adjacent positions of the given cell.
 
 **NOTE**: _The previous data of each array has to be cleared before update, hence the count-resetting loop at the start._
 
