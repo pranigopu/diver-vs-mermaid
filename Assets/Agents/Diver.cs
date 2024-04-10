@@ -227,7 +227,7 @@ public class Diver : MonoBehaviour
     }
 
     //------------------------------------
-    // Function to record damage taken or (if appliable) death:
+    // Function to record damage taken or (if applicable) death:
     public void TakeDamage(int damage)
     {
         health -= damage;
