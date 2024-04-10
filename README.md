@@ -153,13 +153,13 @@ public void UpdateNeighbourhoodData(int x, int y)
 
 The data (for each of the three kinds) are collected in three integer arrays of size four each:
 
-1. `total_3_by_3` (for the $3 \times 3$ neighbourhood)
-2. `total_5_by_5` (for the $5 \times 5$ neighbourhood)
-3. `total_adjacent` (for adjacent cells)
+1. `moore_3` (for the $3 \times 3$ Moore neighbourhood)
+2. `moore_5` (for the $5 \times 5$ Moore neighbourhood)
+3. `vonNeumann_4` (for 4 cell Von Neumann neighbourhood)
 
 **NOTE**: _The indices correspond directly to the tile type, i.e. index 0 holds the number of water tiles, etc._
 
-The function is called each time data about a particular grid cell (corresponding to a map position) is needed. All three are updated at once since it is more computationally economical that way. Furthermore, Storing data in global data structures rather than returning them in functions avoids the hassle of handling the return values when calling the function. The update process consists of iterating around a $5 \times 5$ neighbourhood of the given cell and incrementing the count of the tile type encountered under certain conditions (of course, the given cell's own position is skipped). The primary conditions is to ensure that the position being traversed is not either the given cell's position or an artefact and is within the grid. The secondary conditions are to handle the counts of tile types within a $3 \times 3$ neighbourhood (which is a subset of the $5 \times 5$ neighbourhood) and adjacent positions of the given cell.
+The function is called each time data about a particular grid cell (corresponding to a map position) is needed. All three are updated at once since it is more computationally economical that way. Furthermore, Storing data in global data structures rather than returning them in functions avoids the hassle of handling the return values when calling the function. The update process consists of iterating around a $5 \times 5$ Moore neighbourhood of the given cell and incrementing the count of the tile type encountered under certain conditions (of course, the given cell's own position is skipped). The primary conditions is to ensure that the position being traversed is not either the given cell's position or an artefact and is within the grid. The secondary conditions are to handle the counts of tile types within the $3 \times 3$ Moore neighbourhood (which is a subset of the $5 \times 5$ Moore neighbourhood) and the Von Neumann neighbourhood of the given cell.
 
 **NOTE**: _The previous data of each array has to be cleared before update, hence the count-resetting loop at the start._
 
@@ -171,6 +171,8 @@ Three cellular automata are used for the following functions:
 3. Growing water spaces
 
 They are applied sequentially, and each is applied for a set number of iterations. The order is key, because each cellular automaton relies on certain conditions to be effective, and these conditions are only achieved in a certain order. To illustrate this point, consider the following. The coral growth is made to happen in clusters that are not too large. _The randomly placed seaweed from stage A helps contain and shape the growth of coral clusters_. The water spaces are made to clear excess scattered non-water tiles ("scattered" here means surrounded by too many water tiles so as to not be a part any cluster). Finally, the seaweed is made to grow in scattered, non-clustered patterns so as to ensure the map has not just clean passageways amid clusters of hiding spaces that hinder movement but also some hiding spaces that do not hinder movement. The seaweed growth also introduces some aesthetic messinenss that may help make the map more closely resemble a natural underwater terrain. _Such seaweed growth is only viable if water spaces have been made to some extent (so that there are not too many scattered seaweed tiles leading to scattered seaweed growth and so that there is enough open water to expand into)_.
+
+**NOTE: Updating the grid when applying cellular automata**: <br> Cellular automata are applied per pass (pass = traversing each cell exactly once) such that all the cells are first updated according to the original grid, then the original grid is reassigned as the updated grid (i.e. the updated grid becomes the original grid only after all the cells are updated). Hence, when updating the cell values, the values are assigned to a buffer grid array while referencing the original grid, and only after 1 pass are the buffer grid array's values (i.e. all the updated cell values) assigned to the original grid array.
 
 ---
 
@@ -184,13 +186,13 @@ int GrowCoral(int x, int y, System.Random prng)
     UpdateNeighbourhoodData(x, y);
     
     // Relevant values (calculated for both coral types together):
-    int a = total_3_by_3[2] + total_3_by_3[3];
-    int b = total_5_by_5[2] + total_5_by_5[3];
+    int a = moore_3[2] + moore_3[3];
+    int b = moore_5[2] + moore_5[3];
     
     // If current tile is a water tile...
     if(grid[x, y] == 0)
     {
-        if(a >= 4 && b <= 12)
+        if(a >= 4 && b <= 18)
         {
             // Randomly picking between coral types based on predetermined probabilities:
             if(prng.Next(0, 100) < yellowCoralPercent)
@@ -217,7 +219,7 @@ int GrowWaterSpaces(int x, int y)
 {
     UpdateNeighbourhoodData(x, y);
 
-    if(grid[x, y] >= 1 && total_3_by_3[0] >= 5 || total_5_by_5[0] >= 18)
+    if(grid[x, y] >= 1 && moore_3[0] >= 5 || moore_5[0] >= 18)
         return 0;
     
     return grid[x, y];
