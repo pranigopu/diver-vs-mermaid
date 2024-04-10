@@ -337,7 +337,7 @@ public class LevelGenerator : MonoBehaviour
         // If current tile is a water tile...
         if(grid[x, y] == 0)
         {
-            if(a >= 4 && b <= 12)
+            if(a >= 4 && b <= 18)
             {
                 // Randomly picking between coral types based on predetermined probabilities:
                 if(prng.Next(0, 100) < yellowCoralPercent)
