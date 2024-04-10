@@ -220,6 +220,15 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
+    //------------------------------------
+    // Assigning the values of one integer array to another (assuming equal size):
+    void AssignArrayValues(int[,] array1, int[,] array2)
+    {
+        for(int i = 0; i < array1.GetLength(0); i++)
+            for(int j = 0; j < array1.GetLength(1); j++)
+                array1[i, j] = array2[i, j];
+    }
+
     //================================================
     // STAGE A: Generating initial grid of filled & empty cells
 
@@ -385,27 +394,35 @@ public class LevelGenerator : MonoBehaviour
         // Initialising random number generator using seed:
         System.Random prng = InitialisePRNG();
 
+        // Buffer grid to contain updated cell values until one pass over the grid is done:
+        int[,] buffer = new int[width, height];
+
         // Grow coral (bound by randomly generated seaweed so the coral don't form big masses across the play area):
         for(int i = 0; i < coralGrowthIterations; i++)
+        {
             for(int x = 0; x < width; x++)
                 for(int y = 0; y < height; y++)
-                    grid[x, y] = GrowCoral(x, y, prng);
+                    buffer[x, y] = GrowCoral(x, y, prng);
+            AssignArrayValues(grid, buffer);
+        }
         
         // Grow water spaces to some extent (for clearer spaces and passages):
         for(int i = 0; i < waterSpacesGrowthIterations; i++)
+        {
             for(int x = 0; x < width; x++)
                 for(int y = 0; y < height; y++)
-                    grid[x, y] = GrowWaterSpaces(x, y);
+                    buffer[x, y] = GrowWaterSpaces(x, y);
+            AssignArrayValues(grid, buffer);
+        }
         
-<<<<<<< HEAD:Assets/Generator/LevelGenerator.cs
         // Grow seaweed to some extent (for aesthetics and easy-to-traverse hiding places):
-=======
-        // Grow seaweed to some extent (for aesthetics):
->>>>>>> c85e6200fbc02762fd123e7e4470bf0567c134a9:Assets/LevelGenerator.cs
         for(int i = 0; i < seaweedGrowthIterations; i++)
+        {
             for(int x = 0; x < width; x++)
                 for(int y = 0; y < height; y++)
-                    grid[x, y] = GrowSeaweed(x, y);
+                    buffer[x, y] = GrowSeaweed(x, y);
+            AssignArrayValues(grid, buffer);
+        }
     }
 
     //================================================
@@ -475,6 +492,6 @@ public class LevelGenerator : MonoBehaviour
                 // Setting the chosen tile in the right position:
                 tilemap.SetTile(new Vector3Int(x, y, 0), GetTile(chosenTexture));
             }
+		}
 	}
-    }
 }
