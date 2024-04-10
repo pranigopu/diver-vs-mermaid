@@ -210,7 +210,7 @@ int GrowCoral(int x, int y, System.Random prng)
 }
 ```
 
-The first condition ensures that a water tile surrounded by enough coral tiles in a smaller ($3 \times 3$) neighbourhood is turned to coral, provided there are not too many corals in a wider ($5 \times 5$)  neighbourhood. Furthermore, note that the coral tiles are picked in random based on the preset `yellowCoralPercent`; this is an easy and effective way of adding variety to the map both aesthetically and functionally. This ensures clustering and little to no scattered growth of coral. The second condition ensures that a coral tile surrounded by too few coral tiles in a smaller neighbourhood or by too many water tiles in a wider water tiles is overcome by water. This ensures that any scattered coral tiles are removed, further ensuring clustering of coral.
+The first condition ensures that a water tile surrounded by enough coral tiles in a smaller ($3 \times 3$) Moore neighbourhood is turned to coral, provided there are not too many corals in a wider ($5 \times 5$) Moore neighbourhood. Furthermore, note that the coral tiles are picked in random based on the preset `yellowCoralPercent`; this is an easy and effective way of adding variety to the map both aesthetically and functionally. This ensures clustering and little to no scattered growth of coral. The second condition ensures that a coral tile surrounded by too few coral tiles in a smaller neighbourhood or by too many water tiles in a wider water tiles is overcome by water. This ensures that any scattered coral tiles are removed, further ensuring clustering of coral.
 
 **WATER GROWTH**:
 
@@ -226,7 +226,7 @@ int GrowWaterSpaces(int x, int y)
 }
 ```
 
-The sole condition ensures that if a non-water tile is surrounded by too much water ("too much" is decided differently based on the neighbourhood size, as seen in the condition), the tile is overcome by water. This helps limit scattered non-water tiles and helps clear out passageways between coral clusters, which is useful in-game when traversing the map.
+The sole condition ensures that if a non-water tile is surrounded by too much water ("too much" is decided differently based on the Moore neighbourhood size, as seen in the condition), the tile is overcome by water. This helps limit scattered non-water tiles and helps clear out passageways between coral clusters, which is useful in-game when traversing the map.
 
 **SEAWEED GROWTH**:
 
@@ -252,10 +252,10 @@ int GrowSeaweed(int x, int y)
 }
 ```
 
-The first condition ensures that a seaweed tile surrounded by too many adjacent seaweed dies out (i.e. is replaced by water). Note that `a >= n` (present as `a >= 2` in the above function) ensures greater scattering the lower `n` is (provided that `n` is any integer from 1 to 4); hence, if you want more clustered seaweed, choose a higher `n`. The second condition ensures that a water tile surrounded by enough seaweed becomes a seaweed tile; this enourages some seaweed growth beyond the clustered non-water spaces. Note that `b >= 4` (present as `b >= 4` in the above function) ensures greater seaweed growth the lower `n` is (provided that `n` is any integer from 1 to 8); hence, if you want most seaweed growth beyond the clustered non-water spaces, choose a lower `n`.
+The first condition ensures that a seaweed tile surrounded by too many non-diagonal adjacent seaweed dies out (i.e. is replaced by water). Note that `a >= n` (present as `a >= 2` in the above function) ensures greater scattering the lower `n` is (provided that `n` is any integer from 1 to 4); hence, if you want more clustered seaweed, choose a higher `n`. The second condition ensures that a water tile surrounded by enough seaweed becomes a seaweed tile; this enourages some seaweed growth beyond the clustered non-water spaces. Note that `b >= 4` (present as `b >= 4` in the above function) ensures greater seaweed growth the lower `n` is (provided that `n` is any integer from 1 to 8); hence, if you want most seaweed growth beyond the clustered non-water spaces, choose a lower `n`.
 
 ### STAGE B.3: Running each cellular automaton for a set number of iterations in a set order
-As mentioned before, the order of running the cellular automata shapes the final result. Furthermore, the number of iterations for which each automaton is run can also be significant upto a certain point (beyond which the map may stabilise and no updates may occur). The number of iterations may need to be changed for a better result if other parameters (such as `randomFillPercent` or `seaweedPercent`) are changed. Based on trial-and-error, the following number of iterations are decided in the following order (given the parameters `randomFillPercent` = 60 and `seaweedPercent` = 80):
+As mentioned before, the order of running the cellular automata shapes the final result. Furthermore, the number of iterations for which each automaton is run can also be significant upto a certain point (beyond which the map may stabilise and no updates may occur). The number of iterations may need to be changed for a better result if other parameters (such as `randomFillPercent` or `seaweedPercent`) are changed. Based on trial-and-error, the following number of iterations are decided in the following order (given the parameters `randomFillPercent` = 60, `seaweedPercent` = 50 and `yellowCoralPercent` = 80):
 
 - Coral growth for 25 iterations
 - Water space growth for 10 iterations
