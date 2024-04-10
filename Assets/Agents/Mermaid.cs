@@ -309,7 +309,7 @@ public class Mermaid : MonoBehaviour
         if((bool) blackboard["visible"] == false || Time.time - t_updateVisibility > 3)
         {
             levelGenerator.UpdateNeighbourhoodData(targetPosition.x, targetPosition.y);
-            blackboard["visible"] = (levelGenerator.total_5_by_5[0] >= 12 && levelGenerator.total_3_by_3[0] >= 5)|| (Mathf.Abs(targetPosition.x - sourcePosition.x) < 5 && Mathf.Abs(targetPosition.y - sourcePosition.y) < 5);
+            blackboard["visible"] = (levelGenerator.moore_5[0] >= 12 && levelGenerator.moore_3[0] >= 5)|| (Mathf.Abs(targetPosition.x - sourcePosition.x) < 5 && Mathf.Abs(targetPosition.y - sourcePosition.y) < 5);
             // Resetting the timer for visibility update:
             t_updateVisibility = Time.time;
         }

@@ -176,13 +176,13 @@ public class LevelGenerator : MonoBehaviour
     private void DebugMessage()
     {
         string message = "Total 3x3 --> |";
-        foreach(int i in total_3_by_3) message += i.ToString() + '|';
+        foreach(int i in moore_3) message += i.ToString() + '|';
         Debug.Log(message);
         message = "Total 5x5 --> |";
-        foreach(int i in total_5_by_5) message += i.ToString() + '|';
+        foreach(int i in moore_5) message += i.ToString() + '|';
         Debug.Log(message);
         message = "Total adjacent --> |";
-        foreach(int i in total_adjacent) message += i.ToString() + '|';
+        foreach(int i in vonNeumann_4) message += i.ToString() + '|';
         Debug.Log(message);
     }
 
@@ -266,9 +266,9 @@ public class LevelGenerator : MonoBehaviour
     // STAGE B.1: Getting relevant neighbourhood data
     
     // Data structures that can be conveniently accessed by other functions:
-    [HideInInspector] public int[] total_3_by_3 = {0, 0, 0, 0};
-    [HideInInspector] public int[] total_5_by_5 = {0, 0, 0, 0};
-    [HideInInspector] public int[] total_adjacent = {0, 0, 0, 0};
+    [HideInInspector] public int[] moore_3 = {0, 0, 0, 0}; // 3 x 3 Moore neighbourhood, i.e. 3 x 3 neighbourhood centred at a given cell
+    [HideInInspector] public int[] moore_5 = {0, 0, 0, 0}; // 5 x 5 Moore neighbourhood, i.e. 5 x 5 neighbourhood centred at a given cell
+    [HideInInspector] public int[] vonNeumann_4 = {0, 0, 0, 0}; // 4 cell Von Neumann neighbourhood, i.e. neighbourhood consisting of a given cell's adjacent non-diagonal cells
     // NOTE 1: Storing data in global data structures rather than returning them in functions avoids coding complexity when making function calls
     // NOTE 2: The grid value (i.e. cell type) and indices of each of the above coincide
 
@@ -279,12 +279,12 @@ public class LevelGenerator : MonoBehaviour
         // Clearing previous values:
         for(int i = 0; i < 4; i++)
         {
-            total_3_by_3[i] = 0;
-            total_5_by_5[i] = 0;
-            total_adjacent[i] = 0;
+            moore_3[i] = 0;
+            moore_5[i] = 0;
+            vonNeumann_4[i] = 0;
         }
 
-        // Iterating through the 5 x 5 neighbourhood positions:
+        // Iterating through the 5 x 5 Moore neighbourhood positions:
 		for(int i = x - 2; i <= x + 2; i++)
         {
 			for(int j = y - 2; j <= y + 2; j++)
@@ -303,19 +303,19 @@ public class LevelGenerator : MonoBehaviour
                 //________________________
                 // Gathering neighbourhood data...
 
-                // Data regarding 5 x 5 neighbourhood:
-                total_5_by_5[grid[i, j]]++;
+                // Data regarding 5 x 5 Moore neighbourhood:
+                moore_5[grid[i, j]]++;
                 
                 // Conditions for obtaining the other data:
                 bool condition1 = i >= x - 1 && i <= x + 1 && j >= y - 1 && j <= y + 1;
                 bool condition2 = i == x || j == y;
                 
-                // Data regarding 3 x 3 neighbourhood:
+                // Data regarding 3 x 3 Moore neighbourhood:
                 if(condition1)
-                    total_3_by_3[grid[i, j]]++;
-                // Data regarding adjacent cells:
+                    moore_3[grid[i, j]]++;
+                // Data regarding 4 cell Von Neumann neighbourhood:
                 if(condition1 && condition2)
-                    total_adjacent[grid[i, j]]++;
+                    vonNeumann_4[grid[i, j]]++;
 			}
 		}
 	}
@@ -331,8 +331,8 @@ public class LevelGenerator : MonoBehaviour
         UpdateNeighbourhoodData(x, y);
         
         // Relevant values (calculated for both coral types together):
-        int a = total_3_by_3[2] + total_3_by_3[3];
-        int b = total_5_by_5[2] + total_5_by_5[3];
+        int a = moore_3[2] + moore_3[3];
+        int b = moore_5[2] + moore_5[3];
         
         // If current tile is a water tile...
         if(grid[x, y] == 0)
@@ -359,7 +359,7 @@ public class LevelGenerator : MonoBehaviour
     {
         UpdateNeighbourhoodData(x, y);
     
-        if(grid[x, y] >= 1 && total_3_by_3[0] >= 5 || total_5_by_5[0] >= 18)
+        if(grid[x, y] >= 1 && moore_3[0] >= 5 || moore_5[0] >= 18)
             return 0;
         
         return grid[x, y];
@@ -371,8 +371,8 @@ public class LevelGenerator : MonoBehaviour
         UpdateNeighbourhoodData(x, y);
 
         // Relevant values (calculated only for seaweed):
-        int a = total_adjacent[1];
-        int b = total_3_by_3[1];
+        int a = vonNeumann_4[1];
+        int b = moore_3[1];
 
         // If current tile is a seaweed tile...
         if(grid[x, y] == 1)

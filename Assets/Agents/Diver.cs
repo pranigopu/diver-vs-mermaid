@@ -199,7 +199,7 @@ public class Diver : MonoBehaviour
                     // Making sure the surrounding tiles have ample water...
                     
                     // Most desired condition:
-                    if(levelGenerator.total_5_by_5[0] >= 24)
+                    if(levelGenerator.moore_5[0] >= 24)
                     {
                         // Setting the agent's position accordingly:
                         rb.position = new Vector2(x * renderedGrid.cellSize.x, y * renderedGrid.cellSize.y);
@@ -207,7 +207,7 @@ public class Diver : MonoBehaviour
                         break;
                     }
                     // Second-most desired condition:
-                    else if(levelGenerator.total_3_by_3[0] >= 8)
+                    else if(levelGenerator.moore_3[0] >= 8)
                         backup = new Vector2(x * renderedGrid.cellSize.x, y * renderedGrid.cellSize.y);
                 }
             }
@@ -252,7 +252,7 @@ public class Diver : MonoBehaviour
         if(Time.time - t_spacebar <= 0.5)
             return;
 
-        // Search 3 x 3 neighbourhood for artefact:
+        // Search 3 x 3 Moore neighbourhood for artefact:
         bool foundArtefact = false;
         int i = 0;
         int j = 0;
