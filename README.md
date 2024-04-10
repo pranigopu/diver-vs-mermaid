@@ -265,7 +265,7 @@ As mentioned before, the order of running the cellular automata shapes the final
 
 Example 1 | Example 2
 ---|---
-![](https://github.com/pranigopu/underseaExplorers/blob/86b9346fb077326c9cb442140143e49120d8ab2d/Media/levelGeneration_1.png) | ![](https://github.com/pranigopu/underseaExplorers/blob/86b9346fb077326c9cb442140143e49120d8ab2d/Media/levelGeneration_2.png)
+![](https://github.com/pranigopu/underseaExplorers/blob/bd14c4c4b4bed8d9cf15662b94eb1703453f449e/Media/levelGeneration_1.png) | ![](https://github.com/pranigopu/underseaExplorers/blob/bd14c4c4b4bed8d9cf15662b94eb1703453f449e/Media/levelGeneration_2.png)
 
 ## STAGE C: Post-processing
 Post-processing involves two steps:
