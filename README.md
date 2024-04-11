@@ -12,6 +12,7 @@ This project is a part of my MSc. AI's "Interactive Agents and Procedural Genera
 - Do not let the mermaid get too close, she attacks even harder!
 - Stay out of the mermaid's sight by hiding among the underwater growth
 - Collect all the artefacts without dying and you win!
+- NOTE: You incur a movement speed penalty directly proportional to the number of artefacts in hand
 
 **SCORE**:
 
@@ -463,6 +464,7 @@ Diver's (i.e. your) objectives and properties:
 - Avoid the mermaid as you collect artefacts
 - The mermaid attacks you if it you are visible to it
 - Diver cannot attack the mermaid nor regain lost health
+- You incur a movement speed penalty directly proportional to the number of artefacts you collected <br> _So plan you path well!_
 
 Mermaid's objectives and properties
 
