@@ -455,7 +455,7 @@ Hence, note that if game status is not ongoing, the behaviour tree only allows m
 ## Mermaid
 The mermaid is the NCP, so its behaviour tree is more complex. Similar to the diver, the mermaid updates its perception using `UpdatePerception` every game tick before traversing its behaviour tree, updating the following information:
 
-- Distance of mermaid from target (i.e. player's most recent position)
+- Distance of the mermaid from target (i.e. player's most recent position)
 - Game status with respect to the diver (ongoing, won or lost)
 - Visibility, i.e. whether or not the player is visibile to the mermaid
 
@@ -464,6 +464,8 @@ The mermaid is the NCP, so its behaviour tree is more complex. Similar to the di
 After the update, the behaviour tree is as follows:
 
 ![](https://github.com/pranigopu/underseaExplorers/blob/816b8eaec4f67a7246e63e41d5396003af581422/Media/behaviourTreeForMermaid.png)
+
+**NOTE**: `distance` refers to distance of mermaid from target
 
 - `Patrol` means slower random movement across the map
 - `Seek` makes the mermaid chase the player at a faster pace
