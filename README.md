@@ -1,9 +1,9 @@
 # Undersea Explorers
-**_An interactive agents & procedural generation project_**
+**_An interactive agents and procedural generation project_**
 
 For assignment information, click [here](https://github.com/pranigopu/interactiveAgents-proceduralGeneration/tree/8ef6661915856fa68851a981ee38afe837007ef1/project).
 
-This project is a part of my MSc. AI's "Interactive Agents &amp; Procedural Generation" course and aims to create a game using cellular automata for level generation and behaviour trees for interactive agents.
+This project is a part of my MSc. AI's "Interactive Agents and Procedural Generation" course and aims to create a game using cellular automata for level generation and behaviour trees for interactive agents.
 
 # Level generator design
 The level generator relies on random fill (based on preset proportions) to generate the initial grid (stage A), on which it them applies three cellular automata for a set number of iterations each (stage B). In these stages, the code works only with a 2D integer array (the `grid` variable in `LevelGenerator.cs`), altering the integers so as to represent the following tile types:
@@ -398,3 +398,75 @@ void GenerateTilemap()
 ```
 
 **NOTE**: `tilemap` _is a predeclated global variable of type_ `Tilemap`.
+
+# Agent behaviour
+The game has exactly two kinds of agents:
+
+1. Diver, the playable character
+2. Mermaid, the antagonistic non-playable character (NPC)
+
+The visual design, like the rest of the game, is barebones; each agent is an equally sized a rhombus, the diver back and the mermaid orange. How do they interact? What is the game about?
+
+---
+
+Diver's (i.e. your) objectives and properties:
+
+- If you collect all the artefacts, you win
+- Avoid the mermaid as you collect artefacts
+- The mermaid attacks you if it sees you (_more on this later_)
+- Diver cannot attack the mermaid nor regain lost health
+
+Mermaid's objectives and properties
+
+- If you (the player) are in melee distance, it attacks strongly every second (-3 HP)
+- If you are in sight, it doubles its speed and approaches you
+- If in sight and out of melee distance, it shoots you every two seconds (-1 HP)
+- If you are out of sight, it moves at random at a slower pace
+- Once in sight, the mermaid will pursue the player for at least 2 seconds (no matter if the player hides again)
+
+**NOTE**: _Melee distance means within 2 distance units of the player._
+
+What does "in sight" mean here? "In sight" here means either that there are enough water blocks around the player or that the mermaid is close enough (i.e. within a $5 \times 5$ square from the player). Hence, to hide, you (the player) have to use corals or seaweed and stay away from the mermaid. We define "enough water blocks around the player" as a case wherein the $5 \times 5$ square around you (the player) has at least 12 water blocks and the $3 \times 3$ radius around you has at least 5 water blocks.
+
+_Now, to discuss their behaviour in detail_...
+
+## Diver
+The diver is the player-controlled character, so much its behaviour tree is based on checking for certain player inputs. Every game tick (at the start of which the agent re-traverses its tree from the root), the first action taken is an update, i.e. `UpdateStatus`, which updates the following information:
+
+- Vertical and horizontal movement inputs
+- Other keyboard inputs
+- Game status (ongoing, won or lost)
+
+After the update, the behaviour tree is as follows:
+
+![](https://github.com/pranigopu/underseaExplorers/blob/816b8eaec4f67a7246e63e41d5396003af581422/Media/behaviourTreeForDiver.png)
+
+**NOTE**: Game status values are ONGOING = -1, LOST = 0 and WON = 1.
+
+More on each behaviour:
+
+- `Move` changes diver sprite's velocity by vertical and horizontal movement inputs
+- `HandleArtefacts` does one of the following:
+    - If an artefact is within a $3 \times 3$ neighbourhood, pick it up
+    - Else, if number of artefacts in hand > 0, place an artefact in your position
+  
+Hence, note that if game status is not ongoing, the behaviour tree only allows movement but nothing else, i.e. no handling of artefacts. This (along with other events, discussed later) helps establish an effect that informs the player whether he has won or lost.
+
+## Mermaid
+The mermaid is the NCP, so its behaviour tree is more complex. Similar to the diver, the mermaid updates its perception using `UpdatePerception` every game tick before traversing its behaviour tree, updating the following information:
+
+- Distance of mermaid from target (i.e. player's most recent position)
+- Game status with respect to the diver (ongoing, won or lost)
+- Visibility, i.e. whether or not the player is visibile to the mermaid
+
+**NOTE**: To make hiding a little harder and make the mermaid's player-tracking feel more natural, the mermaid's vision is made such that once in the mermaid's sight, you stay in sight for less than or equal to 2 seconds; the visibility is updated only every 2 seconds, so even if you hide, the mermaid can track you for less than or equal to 2 seconds.
+
+After the update, the behaviour tree is as follows:
+
+![](https://github.com/pranigopu/underseaExplorers/blob/816b8eaec4f67a7246e63e41d5396003af581422/Media/behaviourTreeForMermaid.png)
+
+- `Patrol` means slower random movement across the map
+- `Seek` makes the mermaid chase the player at a faster pace
+- `Melee` makes the mermaid melee attack the player with a 1-second cooldown
+- `Shoot` makes the mermaid shoot at the player with a 2-second cooldown
+- `Idle` makes the mermaid move to the map's centre and wait for the next round
