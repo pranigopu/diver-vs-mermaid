@@ -5,6 +5,27 @@ For assignment information, click [here](https://github.com/pranigopu/interactiv
 
 This project is a part of my MSc. AI's "Interactive Agents and Procedural Generation" course and aims to create a game using cellular automata for level generation and behaviour trees for interactive agents.
 
+# How to play?
+- Use W-A-S-D or arrow keys to move the black rhombus (diver, i.e. you) across the map
+- Use SPACEBAR to pick or place black tiles (artefacts)
+- Avoid the projectiles of the orange rhombus (mermaid)
+- Do not let the mermaid get too close, she attacks even harder!
+- Stay out of the mermaid's sight by hiding among the underwater growth
+- Collect all the artefacts without dying and you win!
+
+**SCORE**:
+
+- Inversely proportional to the time taken
+- Directly proportional to the health remaining
+
+**SOME TIPS**:
+
+- Placing an artefact replaces any tile with the artefact
+- Removing an artefact replaces the artefact with water (blue)
+- Do not spam SPACEBAR! There is a 0.5-second cooldown before you can pick or place
+
+_More information about the tile types is given in the next section_...
+
 # Level generator design
 The level generator relies on random fill (based on preset proportions) to generate the initial grid (stage A), on which it them applies three cellular automata for a set number of iterations each (stage B). In these stages, the code works only with a 2D integer array (the `grid` variable in `LevelGenerator.cs`), altering the integers so as to represent the following tile types:
 
@@ -176,9 +197,25 @@ They are applied sequentially, and each is applied for a set number of iteration
 
 ---
 
-For reference, here are the functions for the three cellular automata:
+For reference, here are the rules and functions for the three cellular automata:
+
+_Some abbreviations to make rule definition more convenient_...
+
+Abbreviation | Meaning
+---|---
+CUR | Current position / cell  / tile
+M3-i | Number of cells of type i in CUR's $3 \times 3$ Moor neighbourhood
+M5-i | Number of cells of type i in CUR's $5 \times 5$ Moor neighbourhood
+VN-i | Number of cells of type i in CUR's 4 cell Von Neumann neighbourhood
+coral | Red and/or yellow coral
 
 **CORAL GROWTH**:
+
+Rules:
+
+- If CUR is water and M3-coral $\geq$ 4 and M5-coral $\leq$ 18, then CUR = coral
+- If CUR is coral and M3-coral $\leq$ 1 and M5-coral $>$ 18, then CUR = water
+- Else, CUR stays unchanged
 
 ```c
 int GrowCoral(int x, int y, System.Random prng)
@@ -214,6 +251,11 @@ The first condition ensures that a water tile surrounded by enough coral tiles i
 
 **WATER GROWTH**:
 
+Rules:
+
+- If CUR is not water and either M3-water $\geq$ 5 or M5-water $\geq$ 18, then CUR = water
+- Else, CUR stays unchanged
+
 ```c
 int GrowWaterSpaces(int x, int y)
 {
@@ -229,6 +271,12 @@ int GrowWaterSpaces(int x, int y)
 The sole condition ensures that if a non-water tile is surrounded by too much water ("too much" is decided differently based on the Moore neighbourhood size, as seen in the condition), the tile is overcome by water. This helps limit scattered non-water tiles and helps clear out passageways between coral clusters, which is useful in-game when traversing the map.
 
 **SEAWEED GROWTH**:
+
+Rules:
+
+- If CUR is seaweed and VN-seaweed $\geq$ 2, then CUR = water
+- If CUR is water and M3-seaweed $\geq$ 4, then CUR = seaweed
+- Else, CUR stays unchanged
 
 ```c
 int GrowSeaweed(int x, int y)
@@ -413,7 +461,7 @@ Diver's (i.e. your) objectives and properties:
 
 - If you collect all the artefacts, you win
 - Avoid the mermaid as you collect artefacts
-- The mermaid attacks you if it sees you (_more on this later_)
+- The mermaid attacks you if it you are visible to it
 - Diver cannot attack the mermaid nor regain lost health
 
 Mermaid's objectives and properties
@@ -446,7 +494,7 @@ After the update, the behaviour tree is as follows:
 More on each behaviour:
 
 - `Move` changes diver sprite's velocity by vertical and horizontal movement inputs
-- `HandleArtefacts` does one of the following:
+- `HandleArtefacts` does one of the following with a 0.5-second cooldown:
     - If an artefact is within a $3 \times 3$ neighbourhood, pick it up
     - Else, if number of artefacts in hand > 0, place an artefact in your position
   
