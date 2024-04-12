@@ -14,7 +14,7 @@ Closer look into level generation in the project (2 min 21 sec): <br> https://ww
 - Use W-A-S-D or arrow keys to move the black rhombus (diver, i.e. you) across the map
 - Use SPACEBAR to pick or place black tiles (artefacts)
 - Avoid the projectiles of the orange rhombus (mermaid)
-- Do not let the mermaid get too close, she attacks even harder!
+- Do not let the mermaid get too close, her melee attacks are worse!
 - Stay out of the mermaid's sight by hiding among the underwater growth
 - Collect all the artefacts without dying and you win!
 - NOTE: You incur a movement speed penalty directly proportional to the number of artefacts collected
