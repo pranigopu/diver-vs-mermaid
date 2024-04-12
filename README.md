@@ -3,9 +3,12 @@
 
 For assignment information, click [here](https://github.com/pranigopu/interactiveAgents-proceduralGeneration/tree/8ef6661915856fa68851a981ee38afe837007ef1/project).
 
-For a small video demonstration of the project: https://youtu.be/sJMKtEH5r3g?si=hqPYJZtHNCJJt4GA
-
 This project is a part of my MSc. AI's "Interactive Agents and Procedural Generation" course and aims to create a game using cellular automata for level generation and behaviour trees for interactive agents.
+
+# Video links
+Brief (sort of flashy) showcase of the project (1 min 22 sec): <br> https://youtu.be/sJMKtEH5r3g?si=hqPYJZtHNCJJt4GA
+
+Closer look into level generation in the project (2 min 21 sec): <br> https://www.youtube.com/watch?v=U8jWge2X8Og
 
 # How to play?
 - Use W-A-S-D or arrow keys to move the black rhombus (diver, i.e. you) across the map
