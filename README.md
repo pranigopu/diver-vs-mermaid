@@ -527,6 +527,21 @@ More on each behaviour:
   
 Hence, note that if game status is not ongoing, the behaviour tree only allows movement but nothing else, i.e. no handling of artefacts. This (along with other events, discussed later) helps establish an effect that informs the player whether he has won or lost.
 
+### More on diver movement
+Diver movement speed depends on 2 things:
+
+1. Tile type at his current position
+2. Number of artefacts collected by him
+
+Check the implementation of the function `Move` in `Agents\Diver.cs`. In brief, we have the following:
+
+- Red coral tiles hinder movement most, having a "sticky" effect
+- Yellow coral tiles hinder movement to some extent, having a "viscous" effect
+- Seaweed tiles hinder movement to a lesser extent
+- Water allows for fastest movement (provided the number of artefacts collected is less enough)
+- The more artefacts collected, the slower the diver becomes
+- Regardless, red coral speed is always the same
+
 ## Mermaid
 The mermaid is the NCP, so its behaviour tree is more complex. Similar to the diver, the mermaid updates its perception using `UpdatePerception` every game tick before traversing its behaviour tree, updating the following information:
 
@@ -547,3 +562,6 @@ After the update, the behaviour tree is as follows:
 - `Melee` makes the mermaid melee attack the player with a 1-second cooldown
 - `Shoot` makes the mermaid shoot at the player with a 2-second cooldown
 - `Idle` makes the mermaid move to the map's centre and wait for the next round
+
+### More on shooting
+Upon calling the function `Shoot` in `Agents\Mermaid.cs`, a projectile sprite is instantiated using a mermaid projectile prefab. A prefab is tied to a script `Agents\MermaidProjectile.cs` that activates as soon as it is instantiated; the script ensures that it seeks the most recent position of the diver object and keeps flying toward that position until either it hits the target or goes beyond the map. In either case, it destroys itself.
