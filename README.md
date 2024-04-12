@@ -496,6 +496,15 @@ What does "in sight" mean here? "In sight" here means either that there are enou
 
 _Now, to discuss their behaviour in detail_...
 
+---
+
+**NOTE: Behaviour tree graph symbols**:
+
+- Circle with '?' = Selector node
+- Rectangle with '$\rightarrow$' = Sequence node
+- Rhombus = Condition node
+- Rectangle = Action node
+
 ## Diver
 The diver is the player-controlled character, so much its behaviour tree is based on checking for certain player inputs. Every game tick (at the start of which the agent re-traverses its tree from the root), the first action taken is an update, i.e. `UpdateStatus`, which updates the following information:
 
