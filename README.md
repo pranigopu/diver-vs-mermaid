@@ -20,6 +20,7 @@ This project is a part of my MSc. AI's "Interactive Agents and Procedural Genera
 
 - Inversely proportional to the time taken
 - Directly proportional to the health remaining
+- Score = $\frac{1000 \times HP}{t}$ (HP = health points remaining, t = time taken)
 
 **SOME TIPS**:
 
