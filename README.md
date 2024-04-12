@@ -488,13 +488,13 @@ The diver is the player-controlled character, so much its behaviour tree is base
 
 - Vertical and horizontal movement inputs
 - Other keyboard inputs
-- Game status (ongoing, won or lost)
+- Game status (ongoing, win or lose)
 
 After the update, the behaviour tree is as follows:
 
 ![](https://github.com/pranigopu/underseaExplorers/blob/816b8eaec4f67a7246e63e41d5396003af581422/Media/behaviourTreeForDiver.png)
 
-**NOTE**: Game status values are ONGOING = -1, LOST = 0 and WON = 1.
+**NOTE**: Game status values are ONGOING = -1, LOSE = 0 and WIN = 1.
 
 More on each behaviour:
 
