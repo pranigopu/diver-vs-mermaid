@@ -327,7 +327,7 @@ As mentioned before, the order of running the cellular automata shapes the final
 
 Example 1 | Example 2
 ---|---
-![](Documentation/levelGeneration_1.png) | ![](Documentation/levelGeneration_2.png)
+![Documentation/levelGeneration_1.png](https://github.com/pranigopu/underseaExplorers/blob/ce1de6fbcb88c0e32a2041e1aa18f077268094bd/Media/levelGeneration_1.png) | ![Documentation/levelGeneration_2.png](https://github.com/pranigopu/underseaExplorers/blob/ce1de6fbcb88c0e32a2041e1aa18f077268094bd/Media/levelGeneration_2.png)
 
 ## STAGE C: Post-processing
 Post-processing involves two steps:
@@ -502,7 +502,7 @@ The diver is the player-controlled character, so much its behaviour tree is base
 
 After the update, the behaviour tree is as follows:
 
-![](Documentation/diverBehaviourTree.png)
+![Documentation/diverBehaviourTree.png](https://github.com/pranigopu/underseaExplorers/blob/ce1de6fbcb88c0e32a2041e1aa18f077268094bd/Media/behaviourTreeForDiver.png)
 
 **NOTE**: Game status values are ONGOING = -1, LOST = 0 and WON = 1.
 
@@ -526,7 +526,7 @@ The mermaid is the NCP, so its behaviour tree is more complex. Similar to the di
 
 After the update, the behaviour tree is as follows:
 
-![](Documentation/mermaidBehaviourTree.png)
+![(Documentation/mermaidBehaviourTree.png)](https://github.com/pranigopu/underseaExplorers/blob/ce1de6fbcb88c0e32a2041e1aa18f077268094bd/Media/behaviourTreeForMermaid.png)
 
 **NOTE**: `distance` refers to distance of mermaid from target
 
