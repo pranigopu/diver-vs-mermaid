@@ -22,6 +22,16 @@ This project is a part of my MSc. AI's "Interactive Agents and Procedural Genera
 - Directly proportional to the health remaining
 - Score = $\frac{1000 \times HP}{t}$ (HP = health points remaining, t = time taken)
 
+**REPLAYING / REGENERATING MAPS**:
+
+- To regenerate the map and thus replay the game, press ENTER/RETURN
+- **NOTE**: The level generation and game restart may take a few seconds
+- To generate the map by stages (for curiosity):
+    - Press 0 to generate a new randomly filled grid
+    - Press 1 to apply coral cellular automaton
+    - Press 2 to apply water cellular automaton
+    - Press 3 to apply seaweed cellular automaton
+
 **SOME TIPS**:
 
 - Placing an artefact replaces any tile with the artefact
@@ -317,7 +327,7 @@ As mentioned before, the order of running the cellular automata shapes the final
 
 Example 1 | Example 2
 ---|---
-![](https://github.com/pranigopu/underseaExplorers/blob/bd14c4c4b4bed8d9cf15662b94eb1703453f449e/Media/levelGeneration_1.png) | ![](https://github.com/pranigopu/underseaExplorers/blob/bd14c4c4b4bed8d9cf15662b94eb1703453f449e/Media/levelGeneration_2.png)
+![](Documentation/levelGeneration_1.png) | ![](Documentation/levelGeneration_2.png)
 
 ## STAGE C: Post-processing
 Post-processing involves two steps:
@@ -488,13 +498,13 @@ The diver is the player-controlled character, so much its behaviour tree is base
 
 - Vertical and horizontal movement inputs
 - Other keyboard inputs
-- Game status (ongoing, win or lose)
+- Game status (ongoing, won or lost)
 
 After the update, the behaviour tree is as follows:
 
-![](https://github.com/pranigopu/underseaExplorers/blob/816b8eaec4f67a7246e63e41d5396003af581422/Media/behaviourTreeForDiver.png)
+![](Documentation/diverBehaviourTree.png)
 
-**NOTE**: Game status values are ONGOING = -1, LOSE = 0 and WIN = 1.
+**NOTE**: Game status values are ONGOING = -1, LOST = 0 and WON = 1.
 
 More on each behaviour:
 
@@ -516,7 +526,7 @@ The mermaid is the NCP, so its behaviour tree is more complex. Similar to the di
 
 After the update, the behaviour tree is as follows:
 
-![](https://github.com/pranigopu/underseaExplorers/blob/816b8eaec4f67a7246e63e41d5396003af581422/Media/behaviourTreeForMermaid.png)
+![](Documentation/mermaidBehaviourTree.png)
 
 **NOTE**: `distance` refers to distance of mermaid from target
 
