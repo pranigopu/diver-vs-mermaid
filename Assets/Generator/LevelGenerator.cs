@@ -201,19 +201,19 @@ public class LevelGenerator : MonoBehaviour
         else if(String.Equals(c, "1"))
         // Re-applying only cellular automaton 1 to current grid:
         {
-            ApplyCellularAutomata(50, 0, 0);
+            ApplyCellularAutomata(25, 0, 0);
             GenerateTilemap();
         }
         else if(String.Equals(c, "2"))
         // Re-applying only cellular automaton 2 to current grid:
         {
-            ApplyCellularAutomata(0, 50, 0);
+            ApplyCellularAutomata(0, 10, 0);
             GenerateTilemap();
         }
         else if(String.Equals(c, "3"))
         // Re-applying only cellular automaton 3 to current grid:
         {
-            ApplyCellularAutomata(0, 0, 10);
+            ApplyCellularAutomata(0, 0, 25);
             PlaceArtefacts();
             GenerateTilemap();
             generationComplete = true;
@@ -389,7 +389,7 @@ public class LevelGenerator : MonoBehaviour
     //------------------------------------
     // STAGE B.3: Running each cellular automaton for a set number of iterations in a set order
     
-    void ApplyCellularAutomata(int coralGrowthIterations = 25, int seaweedGrowthIterations = 25, int waterSpacesGrowthIterations = 10)
+    void ApplyCellularAutomata(int coralGrowthIterations = 25, int waterSpacesGrowthIterations = 10, int seaweedGrowthIterations = 25)
     {
         // Initialising random number generator using seed:
         System.Random prng = InitialisePRNG();
