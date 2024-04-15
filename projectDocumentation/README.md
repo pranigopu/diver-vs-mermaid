@@ -1,4 +1,4 @@
-# PROJECT DOCUMENTATION
+# Project documentation
 The images used for the explanations in the main README of the project as well as potentially useful implementation and conceptual notes taken during the project (the notes are given below).
 
 ---
