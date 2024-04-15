@@ -8,21 +8,21 @@ This project is a part of my MSc. AI's "Interactive Agents and Procedural Genera
 # Video links
 Brief (sort of flashy) showcase of the project (1 min 22 sec): <br> https://youtu.be/sJMKtEH5r3g?si=hqPYJZtHNCJJt4GA
 
-Closer look into level generation in the project (2 min 21 sec): <br> https://www.youtube.com/watch?v=U8jWge2X8Og
+Closer look into level generation in the project (2 min 22 sec): <br> https://www.youtube.com/watch?v=U8jWge2X8Og
 
 # How to play?
 - Use W-A-S-D or arrow keys to move the black rhombus (diver, i.e. you) across the map
 - Use SPACEBAR to pick or place black tiles (artefacts)
 - Avoid the projectiles of the orange rhombus (mermaid)
 - Do not let the mermaid get too close, her melee attacks are worse!
-- Stay out of the mermaid's sight by hiding among the underwater growth
+- Stay out of the mermaid's sight by hiding in the underwater growth (coral and seaweed)
 - Collect all the artefacts without dying and you win!
 - NOTE: You incur a movement speed penalty directly proportional to the number of artefacts collected
 
 **SCORE**:
 
-- Inversely proportional to the time taken
-- Directly proportional to the health remaining
+- Inversely proportional to the time taken to win (if you lose, you get no score)
+- Directly proportional to the health remaining upon winning
 - Score = $\frac{1000 \times HP}{t}$ (HP = health points remaining, t = time taken)
 
 **REPLAYING / REGENERATING MAPS**:
@@ -37,8 +37,8 @@ Closer look into level generation in the project (2 min 21 sec): <br> https://ww
 
 **SOME TIPS**:
 
-- Placing an artefact replaces any tile with the artefact
-- Removing an artefact replaces the artefact with water (blue)
+- Placing an artefact replaces any tile with the artefact tile
+- Picking an artefact replaces the artefact tile with a water tile (blue)
 - Do not spam SPACEBAR! There is a 0.5-second cooldown before you can pick or place
 
 _More information about the tile types is given in the next section_...
@@ -62,7 +62,7 @@ Each of the aforementioned tile types have unique properties:
 - <b style="color:yellow;">Yellow coral</b>: Provides cover and allows only relatively slow travel
 - <b style="color:red;">Red coral</b>: Provides cover but hinders travel significantly (almost to a halt)
 
-**NOTE**: _These properties only apply to the diver agent (the player); the mermaid can move freely across the map._
+**NOTE**: _These properties apply only to the diver agent (the player); the mermaid can move freely across the map._
 
 ---
 
