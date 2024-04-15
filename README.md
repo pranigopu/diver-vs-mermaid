@@ -135,9 +135,9 @@ Before applying cellular automata, some data about the neighbourhood of a grid c
 For reference, here is the code for the associated function:
 
 ```c
-[HideInInspector] public int[] total_3_by_3 = {0, 0, 0, 0};
-[HideInInspector] public int[] total_5_by_5 = {0, 0, 0, 0};
-[HideInInspector] public int[] total_adjacent = {0, 0, 0, 0};
+[HideInInspector] public int[] moore_3 = {0, 0, 0, 0};
+[HideInInspector] public int[] moore_5 = {0, 0, 0, 0};
+[HideInInspector] public int[] vonNeumann_4 = {0, 0, 0, 0};
 
 public void UpdateNeighbourhoodData(int x, int y)
 // Types: 0 = Water, 1 = Seaweed, 2 = Red Coral, 3 = Yellow Coral
@@ -301,8 +301,8 @@ int GrowSeaweed(int x, int y)
     UpdateNeighbourhoodData(x, y);
 
     // Relevant values (calculated only for seaweed):
-    int a = total_adjacent[1];
-    int b = total_3_by_3[1];
+    int a = vonNeumann_4[1];
+    int b = moore_3[1];
 
     // If current tile is a seaweed tile...
     if(grid[x, y] == 1)
