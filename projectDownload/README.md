@@ -1,2 +1,2 @@
 # Project download
-The ZIP file in this directory is the ZIP of the Unity project directory I used for this project.
+The ZIP file in this directory is the ZIP of my Unity project directory that can be opened in Unity Editor.
