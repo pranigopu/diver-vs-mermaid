@@ -145,9 +145,9 @@ public void UpdateNeighbourhoodData(int x, int y)
     // Clearing previous values:
     for(int i = 0; i < 4; i++)
     {
-        total_3_by_3[i] = 0;
-        total_5_by_5[i] = 0;
-        total_adjacent[i] = 0;
+        moore_3[i] = 0;
+        moore_5[i] = 0;
+        vonNeumann_4[i] = 0;
     }
 
     // Iterating through the 5 x 5 neighbourhood positions:
@@ -170,7 +170,7 @@ public void UpdateNeighbourhoodData(int x, int y)
             // Gathering neighbourhood data...
 
             // Data regarding 5 x 5 neighbourhood:
-            total_5_by_5[grid[i, j]]++;
+            moore_5[grid[i, j]]++;
             
             // Conditions for obtaining the other data:
             bool condition1 = i >= x - 1 && i <= x + 1 && j >= y - 1 && j <= y + 1;
@@ -178,10 +178,10 @@ public void UpdateNeighbourhoodData(int x, int y)
             
             // Data regarding 3 x 3 neighbourhood:
             if(condition1)
-                total_3_by_3[grid[i, j]]++;
+                moore_3[grid[i, j]]++;
             // Data regarding adjacent cells:
             if(condition1 && condition2)
-                total_adjacent[grid[i, j]]++;
+                vonNeumann_4[grid[i, j]]++;
         }
     }
 }
