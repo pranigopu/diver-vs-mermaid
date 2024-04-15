@@ -527,6 +527,9 @@ More on each behaviour:
   
 Hence, note that if game status is not ongoing, the behaviour tree only allows movement but nothing else, i.e. no handling of artefacts. This (along with other events, discussed later) helps establish an effect that informs the player whether he has won or lost.
 
+### More on game-over effects for the player
+If the game status is not ongoing, the player has either won or lost. If you - the player - have won, you turn into a mermaid - visually speaking - and can move at maximum speed without being hindered by underwater growth. If you have lost, you turn into a ghost coloured white and with collision disabled (hence, you can pass through entities), and can move at a low speed (albeit not hindered by underwater growth).
+
 ### More on diver movement
 Diver movement speed depends on 2 things:
 
