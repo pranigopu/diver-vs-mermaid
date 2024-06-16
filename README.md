@@ -501,7 +501,7 @@ _Now, to discuss their behaviour in detail_...
 **NOTE: Behaviour tree graph symbols**:
 
 - Circle with '?' = Selector node
-- Rectangle with '$\rightarrow$' = Sequence node
+- Rectangle with ' $\rightarrow$ ' = Sequence node
 - Rhombus = Condition node
 - Rectangle = Action node
 
