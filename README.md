@@ -66,7 +66,7 @@ Each of the aforementioned tile types have unique properties:
 
 ---
 
-Finally, we have post-processing (stage C) wherein we (1) place artefacts at random around the map (indicated in the grid by assigning the associated cell the integer value $-1$) and (2) generate the final level's tilemap. The tilemap implements the grid using tiles of the appropriate textures (they are auto-generated solid colour textures by default, but custom textures can also be applied). By default, the color-to-tile mapping is as follows:
+Finally, we have post-processing (stage C) wherein we (1) place artefacts at random around the map (indicated in the grid by assigning the associated cell the integer value -1) and (2) generate the final level's tilemap. The tilemap implements the grid using tiles of the appropriate textures (they are auto-generated solid colour textures by default, but custom textures can also be applied). By default, the color-to-tile mapping is as follows:
 
 - Water = Blue
 - Seaweed = Green
@@ -500,7 +500,7 @@ _Now, to discuss their behaviour in detail_...
 
 **NOTE: Behaviour tree graph symbols**:
 
-- Circle with '?' = Selector node
+- Circle with ' ? ' = Selector node
 - Rectangle with ' $\rightarrow$ ' = Sequence node
 - Rhombus = Condition node
 - Rectangle = Action node
