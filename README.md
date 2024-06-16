@@ -462,7 +462,7 @@ void GenerateTilemap()
 }
 ```
 
-**NOTE**: `tilemap` _is a predeclated global variable of type_ `Tilemap`.
+**NOTE**: `tilemap` _is a predeclared global variable of type_ `Tilemap`.
 
 # Agent behaviour
 The game has exactly two kinds of agents:
