@@ -13,4 +13,4 @@ The scripts in this directory are the ones written by me for the project. These 
 
 Others:
 
-- `Camera.cs`
+- `CameraControl.cs`
