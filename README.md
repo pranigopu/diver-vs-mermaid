@@ -407,7 +407,7 @@ if(autoTexturing)
 }
 ```
 
-**NOTE** _Each of the above variables are predeclared global variables of type_ `Texture2D`.
+**NOTE**: _Each of the above variables are predeclared global variables of type_ `Texture2D`.
 
 **TILE CREATION ACCORDING TO GIVE TEXTURE**:
 
